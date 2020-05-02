@@ -22,14 +22,22 @@ class DatabaseTest extends BaseTestCase
 
     public function testStore()
     {
-        $response = $this->runApp('POST', '/', ['subject' => 'テストチケット']);
+        $data = [
+            'product_name' => 'テスト商品' ,
+            'price' => 1000,
+            'stock' => 10,
+            'image_dir' => 'test.jpg',
+            'description' => 'これはテスト用商品です。'
+        ];
+
+        $response = $this->runApp('POST', '/product/store', $data);
 
         $id = $this->container['db']->lastInsertID();
-        $stmt = $this->container['db']->query('SELECT * FROM tickets WHERE id = ' . $id);
-        $ticket = $stmt->fetch();
+        $stmt = $this->container['db']->query('SELECT * FROM m_product WHERE product_id = ' . $id);
+        $product = $stmt->fetch();
 
         $this->assertEquals(302, $response->getStatusCode());
-        $this->assertEquals('/tickets', (string)$response->getHeaderLine('Location'));
-        $this->assertEquals('テストチケット', $ticket['subject']);
+        $this->assertEquals('/product', (string)$response->getHeaderLine('Location'));
+        $this->assertEquals('これはテスト用商品です。', $product['description']);
     }
 }

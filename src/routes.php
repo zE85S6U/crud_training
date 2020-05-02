@@ -1,5 +1,7 @@
 <?php
 
+use Classes\Controllers\ProductController;
+use Classes\Controllers\ShoppingController;
 use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -7,13 +9,10 @@ use Slim\Http\Response;
 return function (App $app) {
     $container = $app->getContainer();
 
-    $app->get('/', \Classes\Controllers\TestController::class . ':index');
+    $app->get('/', ShoppingController::class . ':index');
 
-//    $app->get('/[{name}]', function (Request $request, Response $response, array $args) use ($container) {
-//        // Sample log message
-//        $container->get('logger')->info("Slim-Skeleton '/' route");
-//
-//        // Render index view
-//        return $container->get('renderer')->render($response, 'index.phtml', $args);
-//    });
+    // 商品画面
+    $app->get('/product', ProductController::class . ':index');
+    // 商品管理画面
+    $app->post('/product/store', ProductController::class . ':store');
 };

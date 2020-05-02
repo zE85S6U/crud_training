@@ -25,6 +25,6 @@ class ViewTest extends BaseTestCase
         $response = $this->runApp('GET', '/');
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertStringContainsString('Hello', (string)$response->getBody());
+        $this->assertStringContainsString('ショッピング', (string)$response->getBody());
     }
 }
