@@ -1,5 +1,6 @@
 <!--ヘッダー-->
 <?= $this->fetch('header.phtml') ?>
+
 <h3>商品管理</h3>
 <form action="/product/<?= $product['product_id']?>" method="post">
     <p>商品名:<input type="text" name="product_name"  value="<?= $product['product_name'] ?>"></p>

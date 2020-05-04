@@ -1,0 +1,16 @@
+<!--ヘッダー-->
+<?= $this->fetch('header.phtml') ?>
+
+<h3>新商品の追加</h3>
+
+<form action="/product" method="post">
+    <p>商品名:<input type="text" name="product_name"></p>
+    <p>価格:<input type="number" name="price"></p>
+    <p>在庫数:<input type="number" name="stock"></p>
+    <p>商品画像:<input type="text" name="image_dir"></p>
+    <p>説明文:<textarea name="description" cols="40" rows="6"></textarea></p>
+
+    <button>追加</button>
+</form>
+<!--フッター-->
+<?= $this->fetch('footer.phtml') ?>
