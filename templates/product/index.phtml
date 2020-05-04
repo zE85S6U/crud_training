@@ -1,6 +1,12 @@
 <!--ヘッダー-->
 <?= $this->fetch('header.phtml') ?>
-<div class="h3">商品画面</div>
-
+<div class="h3">商品一覧</div>
+<?php foreach ($products as $product): ?>
+    <li class="list-group-item">
+        <a href="/product/<?= $product['product_id'] ?>">
+            <?= e($product['product_name']) ?>
+        </a>
+    </li>
+<?php endforeach; ?>
 <!--フッター-->
 <?= $this->fetch('footer.phtml') ?>

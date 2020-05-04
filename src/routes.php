@@ -11,8 +11,21 @@ return function (App $app) {
 
     $app->get('/', ShoppingController::class . ':index');
 
-    // 商品画面
+    // 商品一覧画面
     $app->get('/product', ProductController::class . ':index');
-    // 商品管理画面
-    $app->post('/product/store', ProductController::class . ':store');
+
+    // 新規作成用フォームの表示
+    $app->get('/product/create', ProductController::class . ':create');
+
+    // 新規商品追加
+    $app->post('/product', ProductController::class . ':store');
+
+    // 商品更新画面
+    $app->get('/product/{id}', ProductController::class . ':edit');
+
+    //　商品更新
+    $app->post('/product/{id}', ProductController::class . ':update');
+
+    // 削除
+    $app->delete('/product/{id}', ProductController::class . ':delete');
 };

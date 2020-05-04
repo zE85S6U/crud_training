@@ -1,0 +1,14 @@
+<!--ヘッダー-->
+<?= $this->fetch('header.phtml') ?>
+<h3>商品管理</h3>
+<form action="/product/<?= $product['product_id']?>" method="post">
+    <p>商品名:<input type="text" name="product_name"  value="<?= $product['product_name'] ?>"></p>
+    <p>価格:<input type="number" name="price"  value="<?= $product['price'] ?>"></p>
+    <p>在庫数:<input type="number" name="stock"  value="<?= $product['stock'] ?>"></p>
+    <p>商品画像:<input type="text" name="image_dir"  value="<?= $product['image_dir'] ?>"></p>
+    <p>説明文:<textarea name="description" cols="40" rows="6"> <?= $product['description'] ?></textarea></p>
+
+    <input type="submit" value="更新する">
+</form>
+<!--フッター-->
+<?= $this->fetch('footer.phtml') ?>
