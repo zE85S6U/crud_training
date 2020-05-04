@@ -113,7 +113,9 @@ class ProductController extends Controller
         $stmt = $this->db->prepare('UPDATE m_product SET product_name = :product_name, 
                      price = :price, stock = :stock, image_dir = :image_dir, description = :description
                      WHERE product_id = :product_id');
+
         $stmt->execute($product);
+
         return $response->withRedirect("/product");
     }
 
@@ -132,7 +134,7 @@ class ProductController extends Controller
             return $response->withStatus(404)->write($e->getMessage());
         }
         $stmt = $this->db->prepare('DELETE FROM m_product WHERE product_id = :id');
-        $stmt->execute(['id' => $product['id']]);
+        $stmt->execute(['id' => $product['product_id']]);
         return $response->withRedirect("/product");
     }
 

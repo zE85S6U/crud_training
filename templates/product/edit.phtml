@@ -8,7 +8,8 @@
     <p>商品画像:<input type="text" name="image_dir"  value="<?= $product['image_dir'] ?>"></p>
     <p>説明文:<textarea name="description" cols="40" rows="6"> <?= $product['description'] ?></textarea></p>
 
-    <input type="submit" value="更新する">
+    <button>更新</button>
+    <button name="_METHOD" value="delete">削除</button>
 </form>
 <!--フッター-->
 <?= $this->fetch('footer.phtml') ?>
