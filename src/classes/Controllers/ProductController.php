@@ -10,6 +10,9 @@ use Slim\Http\Response;
 
 class ProductController extends Controller
 {
+    // 商品画像の保存ディレクトリ
+    const FILE_DIR = __DIR__ . '/../../../public/image/';
+
     /**
      * 商品一覧
      * @param Request $request
@@ -47,17 +50,18 @@ class ProductController extends Controller
     {
         // postされたデータを変数に代入
         $product = $request->getParsedBody();
-
         $sql = 'INSERT INTO m_product (product_name, price, stock, image_dir, description) '
             . 'VALUES (:product_name, :price, :stock, :image_dir, :description)';
-
         $stmt = $this->db->prepare($sql);
+
+        // 画像ファイルをサーバにアップロード
+        $image = $this->imgUpload();
 
         // プリペアードステートメントを安全に代入
         $stmt->bindParam(':product_name', $product['product_name'], PDO::PARAM_STR);
         $stmt->bindParam(':price', $product['price'], PDO::PARAM_INT);
         $stmt->bindParam(':stock', $product['stock'], PDO::PARAM_INT);
-        $stmt->bindParam(':image_dir', $product['image_dir'], PDO::PARAM_STR);
+        $stmt->bindParam(':image_dir', $image, PDO::PARAM_STR);
         $stmt->bindParam(':description', $product['description'], PDO::PARAM_STR);
 
         $result = $stmt->execute();
@@ -104,17 +108,31 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             return $response->withStatus(404)->write($e->getMessage());
         }
+
+        // 画像ファイルをサーバにアップロード
+        if (!empty($_FILES['image_dir']['name'])) {
+            $image = $this->imgUpload();
+        }
+
         $product['product_name'] = $request->getParsedBodyParam('product_name');
         $product['price'] = $request->getParsedBodyParam('price');
         $product['stock'] = $request->getParsedBodyParam('stock');
-        $product['image_dir'] = $request->getParsedBodyParam('image_dir');
+        $product['image_dir'] = $image ?? $product['image_dir'];
         $product['description'] = $request->getParsedBodyParam('description');
 
         $stmt = $this->db->prepare('UPDATE m_product SET product_name = :product_name, 
                      price = :price, stock = :stock, image_dir = :image_dir, description = :description
                      WHERE product_id = :product_id');
 
-        $stmt->execute($product);
+        // プリペアードステートメントを安全に代入
+        $stmt->bindParam(':product_id', $product['product_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':product_name', $product['product_name'], PDO::PARAM_STR);
+        $stmt->bindParam(':price', $product['price'], PDO::PARAM_INT);
+        $stmt->bindParam(':stock', $product['stock'], PDO::PARAM_INT);
+        $stmt->bindParam(':image_dir', $product['image_dir'], PDO::PARAM_STR);
+        $stmt->bindParam(':description', $product['description'], PDO::PARAM_STR);
+
+        $stmt->execute();
 
         return $response->withRedirect("/product");
     }
@@ -148,10 +166,26 @@ class ProductController extends Controller
         $sql = 'SELECT * FROM m_product WHERE product_id = :id';
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id' => $id]);
-        $ticket = $stmt->fetch();
-        if (!$ticket) {
+        $product = $stmt->fetch();
+        if (!$product) {
             throw new \Exception('not found');
         }
-        return $ticket;
+        return $product;
+    }
+
+    /**
+     * 画像をサーバに保存
+     * @return string 画像ファイル名
+     */
+    private function imgUpload(): string
+    {
+        $image = uniqid(mt_rand());                                                          // 一意の文字列を作成
+        $image .= '.' . substr(strrchr($_FILES['image_dir']['name'], '.'), 1);   // 作成した文字列にアップロードされたファイルの拡張子を追記
+        $file = self::FILE_DIR . $image;                                                    // ファイルの保存場所
+        if (!empty($_FILES['image_dir']['name'])) {                                         // ファイルがアップロードされていれば
+            move_uploaded_file($_FILES['image_dir']['tmp_name'], $file);                    // ファイルを保存
+            if (exif_imagetype($file)) return $image;                                       // 画像ファイル名を返す
+        }
+        return "";                                                                          //
     }
 }

@@ -26,7 +26,7 @@ class ProductControllerTest extends BaseTestCase
         $response = $this->runApp('GET', '/product');
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertStringContainsString('商品一覧', (string)$response->getBody());
+        $this->assertStringContainsString('うきうきショッピング', (string)$response->getBody());
     }
 
     public function testStore()
@@ -39,20 +39,8 @@ class ProductControllerTest extends BaseTestCase
             'description' => 'これはテスト用商品です。'
         ];
 
-        $response = $this->runApp('POST', '/product/store', $data);
+        $response = $this->runApp('POST', '/product', $data);
 
-        $id = $this->container['db']->lastInsertID();
-        $stmt = $this->container['db']->query('SELECT * FROM m_product WHERE product_id = ' . $id);
-        $product = $stmt->fetch();
-
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertEquals('/product', (string)$response->getHeaderLine('Location'));
-        $this->assertEquals('これはテスト用商品です。', $product['description']);
-    }
-
-    public function testUpdate()
-    {
-        $response = $this->runApp('POST', '/product/update', $data);
         $id = $this->container['db']->lastInsertID();
         $stmt = $this->container['db']->query('SELECT * FROM m_product WHERE product_id = ' . $id);
         $product = $stmt->fetch();

@@ -3,12 +3,12 @@
 
 <h3>新商品の追加</h3>
 
-<form action="/product" method="post">
-    <p>商品名:<input type="text" name="product_name"></p>
-    <p>価格:<input type="number" name="price"></p>
-    <p>在庫数:<input type="number" name="stock"></p>
-    <p>商品画像:<input type="text" name="image_dir"></p>
-    <p>説明文:<textarea name="description" cols="40" rows="6"></textarea></p>
+<form action="/product" method="post"  enctype="multipart/form-data">
+    <label>商品名:</label><input type="text" name="product_name">
+    <label>価格:</label><input type="number" name="price">
+    <label>在庫数:</label><input type="number" name="stock">
+    <label>説明文:</label><textarea name="description" cols="40" rows="6"></textarea>
+    <label>商品画像:</label><input type="file" name="image_dir" id="" accept=".jpg, jpeg, png" required="required">
 
     <button>追加</button>
 </form>

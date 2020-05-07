@@ -2,13 +2,12 @@
 <?= $this->fetch('header.phtml') ?>
 
 <h3>商品管理</h3>
-<form action="/product/<?= $product['product_id']?>" method="post">
-    <p>商品名:<input type="text" name="product_name"  value="<?= $product['product_name'] ?>"></p>
-    <p>価格:<input type="number" name="price"  value="<?= $product['price'] ?>"></p>
-    <p>在庫数:<input type="number" name="stock"  value="<?= $product['stock'] ?>"></p>
-    <p>商品画像:<input type="text" name="image_dir"  value="<?= $product['image_dir'] ?>"></p>
-    <p>説明文:<textarea name="description" cols="40" rows="6"> <?= $product['description'] ?></textarea></p>
-
+<form action="/product/<?= $product['product_id'] ?>" method="post" enctype="multipart/form-data">
+    <label>商品名:</label><input type="text" name="product_name" value="<?= $product['product_name'] ?>">
+    <label>価格:</label><input type="number" name="price" value="<?= $product['price'] ?>">
+    <label>在庫数:</label><input type="number" name="stock" value="<?= $product['stock'] ?>">
+    <label>商品画像:</label><input type="file" name="image_dir" accept=".jpg, jpeg, png">
+    <label>説明文:</label><textarea name="description" cols="30" rows="10"><?= $product['description'] ?></textarea>
     <button>更新</button>
     <button name="_METHOD" value="delete">削除</button>
 </form>
