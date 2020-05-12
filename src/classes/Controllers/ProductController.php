@@ -4,7 +4,9 @@
 namespace Classes\Controllers;
 
 
+use Exception;
 use PDO;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -17,7 +19,7 @@ class ProductController extends Controller
      * 商品一覧
      * @param Request $request
      * @param Response $response
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
     public function index(Request $request, Response $response)
     {
@@ -32,9 +34,9 @@ class ProductController extends Controller
      * 新規商品追加用フォームの表示
      * @param Request $request
      * @param Response $response
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
-    public function create(Request $request, Response $response)
+    public function show(Request $request, Response $response)
     {
         return $this->renderer->render($response, 'product/create.phtml');
     }
@@ -44,7 +46,7 @@ class ProductController extends Controller
      * @param Request $request
      * @param Response $response
      * @return Response
-     * @throws \Exception
+     * @throws Exception
      */
     public function store(Request $request, Response $response)
     {
@@ -67,7 +69,7 @@ class ProductController extends Controller
         $result = $stmt->execute();
 
         if (!$result) {
-            throw new \Exception
+            throw new Exception
             ('could not save the product');
         }
 
@@ -75,12 +77,12 @@ class ProductController extends Controller
         return $response->withRedirect("/product");
     }
 
+
     /**
-     * 商品の編集画面
      * @param Request $request
      * @param Response $response
      * @param array $args
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
     public function edit(Request $request, Response $response, array $args)
     {
@@ -105,7 +107,7 @@ class ProductController extends Controller
     {
         try {
             $product = $this->fetchProduct($args['id']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $response->withStatus(404)->write($e->getMessage());
         }
 
@@ -148,7 +150,7 @@ class ProductController extends Controller
     {
         try {
             $product = $this->fetchProduct($args['id']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $response->withStatus(404)->write($e->getMessage());
         }
         $stmt = $this->db->prepare('DELETE FROM m_product WHERE product_id = :id');
@@ -159,7 +161,7 @@ class ProductController extends Controller
     /**
      * @param $id
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function fetchProduct($id): array
     {
@@ -168,7 +170,7 @@ class ProductController extends Controller
         $stmt->execute(['id' => $id]);
         $product = $stmt->fetch();
         if (!$product) {
-            throw new \Exception('not found');
+            throw new Exception('not found');
         }
         return $product;
     }
@@ -179,13 +181,13 @@ class ProductController extends Controller
      */
     private function imgUpload(): string
     {
-        $image = uniqid(mt_rand());                                                          // 一意の文字列を作成
-        $image .= '.' . substr(strrchr($_FILES['image_dir']['name'], '.'), 1);   // 作成した文字列にアップロードされたファイルの拡張子を追記
-        $file = self::FILE_DIR . $image;                                                    // ファイルの保存場所
-        if (!empty($_FILES['image_dir']['name'])) {                                         // ファイルがアップロードされていれば
-            move_uploaded_file($_FILES['image_dir']['tmp_name'], $file);                    // ファイルを保存
-            if (exif_imagetype($file)) return $image;                                       // 画像ファイル名を返す
+        $image = uniqid(mt_rand());
+        $image .= '.' . substr(strrchr($_FILES['image_dir']['name'], '.'), 1);
+        $file = self::FILE_DIR . $image;
+        if (!empty($_FILES['image_dir']['name'])) {
+            move_uploaded_file($_FILES['image_dir']['tmp_name'], $file);
+            if (exif_imagetype($file)) return $image;
         }
-        return "";                                                                          //
+        return "";
     }
 }

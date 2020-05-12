@@ -1,5 +1,18 @@
 <!--ヘッダー-->
 <?= $this->fetch('header.phtml') ?>
 
+<h3>サイトトップ</h3>
+
+<?php foreach ($products as $product): ?>
+<div>
+    <a href="/item/<?= $product['product_id'] ?>">
+        <img src="<?= '/image/' .  $product['image_dir'] ?>" alt="商品画像" width="300" height="200">
+    </a>
+    <label for="product">商品名 : <?= $product['product_name'] ?></label>
+    <label for="product">価格 : <?= $product['price'] ?></label>
+    <label for="product">在庫 : <?= $product['stock'] ?></label>
+</div>
+<?php endforeach; ?>
+
 <!--フッター-->
 <?= $this->fetch('footer.phtml') ?>

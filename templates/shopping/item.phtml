@@ -1,0 +1,31 @@
+<!--ヘッダー-->
+<?= $this->fetch('header.phtml') ?>
+
+<h3>>購入商品詳細</h3>
+
+<div>
+    <img src="<?= '/image/' . $product['image_dir'] ?>" alt="商品画像" width="300" height="200">
+    <label for="product">説明 :</label><?= $product['description'] ?>
+    <label for="product">商品名 :</label><?= $product['product_name'] ?>
+    <label for="product">価格 :</label><?= $product['price'] ?>
+</div>
+<div>
+    <form action="/order/cart" method="post">
+        <label for="product">数量 :</label>
+        <select name="order_quantity">
+            <?php
+            for ($i = 1; $i <= $product['stock']; $i++) {
+                echo "<option value=$i>$i</option>";
+            }
+            ?>
+        </select>
+        <input type="submit" value="カートに入れる">
+        <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
+        <input type="hidden" name="product_name" value="<?= $product['product_name'] ?>">
+        <input type="hidden" name="price" value="<?= $product['price'] ?>">
+        <input type="hidden" name="stock" value="<?= $product['stock'] ?>">
+        <input type="hidden" name="image_dir" value="<?= '/image/' . $product['image_dir'] ?>">
+    </form>
+</div>
+<!--フッター-->
+<?= $this->fetch('footer.phtml') ?>

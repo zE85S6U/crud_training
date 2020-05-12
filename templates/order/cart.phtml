@@ -1,0 +1,39 @@
+<!--ヘッダー-->
+<?= $this->fetch('header.phtml') ?>
+
+<h3>カート</h3>
+
+<div>
+    <a href="/">買い物を続ける</a>
+</div>
+<div>
+    <div class="h3">カートの中身</div>
+    <?php if (!empty($_SESSION['cart'])) : ?>
+        <?php foreach ($_SESSION['cart'] as $index => $item) : ?>
+            <img src="<?= $item['image_dir'] ?>" alt="商品画像" width="100" height="100">
+            <label for="product">商品名 :</label><?= $item['product_name'] ?>
+            <label for="product">価格 :</label><?= $item['price'] ?>
+            <select name="order_quantity">
+                <?php
+                for ($i = 1; $i <= $item['stock']; $i++) {
+                    echo "<option value=$i";
+                    if ($item['order_quantity'] == $i) {
+                        echo "\" selected";
+                    }
+                    echo ">$i</option>";
+                }
+                ?>
+            </select>
+            <a href=/order/cart/<?= $index ?>>削除</a>
+            <hr>
+        <?php endforeach; ?>
+    <?php else : ?>
+        <p>ショッピングカートに商品は入っていません。</p>
+    <?php endif; ?>
+</div>
+<div>
+    <a href="">購入</a>
+</div>
+
+<!--フッター-->
+<?= $this->fetch('footer.phtml') ?>
