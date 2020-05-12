@@ -9,7 +9,7 @@
         <img src="<?= '/image/' .  $product['image_dir'] ?>" alt="商品画像" width="300" height="200">
     </a>
     <label for="product">商品名 : <?= $product['product_name'] ?></label>
-    <label for="product">価格 : <?= $product['price'] ?></label>
+    <label for="product">価格 : <?= yen($product['price']) ?></label>
     <label for="product">在庫 : <?= $product['stock'] ?></label>
 </div>
 <?php endforeach; ?>

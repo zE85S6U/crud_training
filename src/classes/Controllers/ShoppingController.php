@@ -46,6 +46,8 @@ class ShoppingController extends Controller
         return $this->renderer->render($response, '/shopping/item.phtml', $data);
     }
 
+
+
     /**
      * @param $id
      * @return array

@@ -17,13 +17,18 @@ return function (App $app) {
     $app->get('/item/{id}', ShoppingController::class . ':show');
 
     // カートを表示する
-    $app->get('/order/cart', CartController::class . ':index');
+    $app->get('/cart', CartController::class . ':index');
 
     // カートに商品を追加する
-    $app->post('/order/cart', CartController::class . ':insert');
+    $app->post('/cart', CartController::class . ':insert');
+
+    // カートから注文個数を更新する
+    $app->post('/cart/update', CartController::class . ':update');
 
     // カートから商品を削除する
-    $app->get('/order/cart/{id}', CartController::class . ':delete');
+    $app->get('/cart/{id}', CartController::class . ':delete');
+
+    // 購入画面
 
     // 商品一覧画面
     $app->get('/product', ProductController::class . ':index');

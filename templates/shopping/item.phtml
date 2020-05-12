@@ -1,16 +1,16 @@
 <!--ヘッダー-->
 <?= $this->fetch('header.phtml') ?>
 
-<h3>>購入商品詳細</h3>
+<h3>購入商品詳細</h3>
 
 <div>
     <img src="<?= '/image/' . $product['image_dir'] ?>" alt="商品画像" width="300" height="200">
     <label for="product">説明 :</label><?= $product['description'] ?>
     <label for="product">商品名 :</label><?= $product['product_name'] ?>
-    <label for="product">価格 :</label><?= $product['price'] ?>
+    <label for="product">価格 :</label><?= yen($product['price']) ?>
 </div>
 <div>
-    <form action="/order/cart" method="post">
+    <form action="/cart" method="post">
         <label for="product">数量 :</label>
         <select name="order_quantity">
             <?php

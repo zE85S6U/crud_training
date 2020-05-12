@@ -19,7 +19,7 @@ class CartController extends Controller
      */
     public function index(Request $request, Response $response)
     {
-        return $this->renderer->render($response, '/order/cart.phtml');
+        return $this->renderer->render($response, '/cart/index.phtml');
     }
 
     /**
@@ -30,13 +30,17 @@ class CartController extends Controller
      */
     public function insert(Request $request, Response $response)
     {
-        $toCart = $request->getParsedBody();
+        $toCart = $this->trimPostCartData($request->getParsedBody());
 
+        // カートに商品が入っていない場合は商品を追加して表示する
         if (empty($_SESSION['cart'])) {
             $_SESSION['cart'][] = $toCart;
-            return $this->renderer->render($response, '/order/cart.phtml');
+            $this->minerTotal();
+            $this->total();
+            return $response->withRedirect('/cart');
         }
 
+        // 追加済の場合は個数を追記する
         $index = array_search($toCart['product_id'], array_column($_SESSION['cart'], 'product_id'));
         if ($index === false) {
             $_SESSION['cart'][] = $toCart;
@@ -44,10 +48,63 @@ class CartController extends Controller
             $_SESSION['cart'][$index]['order_quantity'] += $toCart['order_quantity'];
         }
 
-        $_SESSION['token'] = md5("token");
-
-        return $response->withRedirect("/order/cart");
+        $this->minerTotal();
+        $this->total();
+        return $response->withRedirect('/cart');
     }
+
+    /**
+     * フォームから送信された
+     * データを表示用に整える
+     * @param $cartData
+     * @return array
+     */
+    private function trimPostCartData($cartData): array
+    {
+        $cartData['order_quantity'] = (int)$cartData['order_quantity'];
+        $cartData['product_id'] = (int)$cartData['product_id'];
+        $cartData['price'] = (int)$cartData['price'];
+        $cartData['stock'] = (int)$cartData['stock'];
+
+        return $cartData;
+    }
+
+    /**
+     * 小計を計算
+     */
+    private function minerTotal()
+    {
+        foreach ($_SESSION['cart'] as $index => $item) {
+            $_SESSION['cart'][$index]['miner_total'] =
+                $item['order_quantity'] * $item['price'];
+        }
+    }
+
+    private function total()
+    {
+        $sumArr = array_column($_SESSION['cart'], 'miner_total');
+        $sum = array_sum($sumArr);
+
+        $_SESSION['carts']['total'] = $sum;
+    }
+
+    /**
+     * 注文個数を更新
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    function update(Request $request, Response $response)
+    {
+        $index = $request->getParsedBodyParam('index');
+        $quantity = $request->getParsedBodyParam('order_quantity');
+        $_SESSION['cart'][$index]['order_quantity'] = $quantity;
+
+        $this->minerTotal();
+        $this->total();
+        return $response->withRedirect('/cart');
+    }
+
 
     /**
      * カードから商品を削除する
@@ -59,7 +116,9 @@ class CartController extends Controller
     public function delete(Request $request, Response $response, array $args)
     {
         array_splice($_SESSION['cart'], $args['id'], 1);
-        return $response->withRedirect("/order/cart");
+        $this->total();
+
+        return $response->withRedirect('/cart');
     }
 
     /**
@@ -77,9 +136,5 @@ class CartController extends Controller
             throw new Exception('not found');
         }
         return $product;
-
-
     }
-
-
 }
