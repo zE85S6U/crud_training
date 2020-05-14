@@ -4,20 +4,19 @@
 namespace Classes\Controllers;
 
 
-use Exception;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use function PHPUnit\Framework\isEmpty;
 
 class CartController extends Controller
 {
+
     /**
-     * カート内一覧を表示する
      * @param Request $request
      * @param Response $response
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
-    public function index(Request $request, Response $response)
+    public function index(Request $request, Response $response): ResponseInterface
     {
         return $this->renderer->render($response, '/cart/index.phtml');
     }
@@ -26,9 +25,9 @@ class CartController extends Controller
      * カートに商品を追加する
      * @param Request $request
      * @param Response $response
-     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @return Response
      */
-    public function insert(Request $request, Response $response)
+    public function insert(Request $request, Response $response): Response
     {
         $toCart = $this->trimPostCartData($request->getParsedBody());
 
@@ -72,7 +71,7 @@ class CartController extends Controller
     /**
      * 小計を計算
      */
-    private function minerTotal()
+    private function minerTotal(): void
     {
         foreach ($_SESSION['cart'] as $index => $item) {
             $_SESSION['cart'][$index]['miner_total'] =
@@ -94,7 +93,7 @@ class CartController extends Controller
      * @param Response $response
      * @return Response
      */
-    function update(Request $request, Response $response)
+    function update(Request $request, Response $response): Response
     {
         $index = $request->getParsedBodyParam('index');
         $quantity = $request->getParsedBodyParam('order_quantity');
@@ -113,7 +112,7 @@ class CartController extends Controller
      * @param array $args
      * @return Response
      */
-    public function delete(Request $request, Response $response, array $args)
+    public function delete(Request $request, Response $response, array $args): Response
     {
         array_splice($_SESSION['cart'], $args['id'], 1);
         $this->total();
@@ -121,20 +120,4 @@ class CartController extends Controller
         return $response->withRedirect('/cart');
     }
 
-    /**
-     * @param $id
-     * @return array
-     * @throws Exception
-     */
-    private function fetchProduct($id): array
-    {
-        $sql = 'SELECT * FROM m_product WHERE product_id = :id';
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $id]);
-        $product = $stmt->fetch();
-        if (!$product) {
-            throw new Exception('not found');
-        }
-        return $product;
-    }
 }

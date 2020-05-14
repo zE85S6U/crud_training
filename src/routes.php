@@ -1,6 +1,7 @@
 <?php
 
 use Classes\Controllers\CartController;
+use Classes\Controllers\OrderController;
 use Classes\Controllers\ProductController;
 use Classes\Controllers\ShoppingController;
 use Slim\App;
@@ -29,6 +30,10 @@ return function (App $app) {
     $app->get('/cart/{id}', CartController::class . ':delete');
 
     // 購入画面
+    $app->get('/order', OrderController::class . ':index');
+
+    // 購入確定
+    $app->get('/order/submit', OrderController::class . ':submit');
 
     // 商品一覧画面
     $app->get('/product', ProductController::class . ':index');

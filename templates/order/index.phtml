@@ -1,0 +1,30 @@
+<!--ヘッダー-->
+<?= $this->fetch('header.phtml') ?>
+
+<h3>購入確認</h3>
+
+<div>
+    <a href="/">買い物を続ける</a>
+</div>
+<div>
+    <?php if (!empty($_SESSION['cart'])) : ?>
+        <?php foreach ($_SESSION['cart'] as $index => $item) : ?>
+            <img src="<?= $item['image_dir'] ?>" alt="商品画像" width="100" height="100">
+            <label for="product">商品名 :</label><?= $item['product_name'] ?>
+            <label for="product">価格 :</label><?= yen($item['price']) ?>
+            <label for="product">個数 :</label><?= $item['order_quantity'] ?>
+            <label for="product">小計 :</label><?= yen($item['miner_total']) ?>
+            <hr>
+        <?php endforeach; ?>
+        <label for="product">合計 :</label><?= yen($_SESSION['carts']['total']) ?>
+        <div>
+            <a href="/order/submit" onclick="return confirm('本当に購入しますか？')">購入確定</a>
+        </div>
+    <?php else : ?>
+        <p>ショッピングカートに商品は入っていません。</p>
+    <?php endif; ?>
+</div>
+
+
+<!--フッター-->
+<?= $this->fetch('footer.phtml') ?>

@@ -21,7 +21,7 @@ class ProductController extends Controller
      * @param Response $response
      * @return ResponseInterface
      */
-    public function index(Request $request, Response $response)
+    public function index(Request $request, Response $response): ResponseInterface
     {
         $sql = 'SELECT * FROM m_product';
         $stmt = $this->db->query($sql);
@@ -36,7 +36,7 @@ class ProductController extends Controller
      * @param Response $response
      * @return ResponseInterface
      */
-    public function show(Request $request, Response $response)
+    public function show(Request $request, Response $response): ResponseInterface
     {
         return $this->renderer->render($response, 'product/create.phtml');
     }
@@ -48,7 +48,7 @@ class ProductController extends Controller
      * @return Response
      * @throws Exception
      */
-    public function store(Request $request, Response $response)
+    public function store(Request $request, Response $response): Response
     {
         // postされたデータを変数に代入
         $product = $request->getParsedBody();
@@ -84,7 +84,7 @@ class ProductController extends Controller
      * @param array $args
      * @return ResponseInterface
      */
-    public function edit(Request $request, Response $response, array $args)
+    public function edit(Request $request, Response $response, array $args): ResponseInterface
     {
         $sql = 'SELECT * FROM m_product WHERE product_id = :id';
         $stmt = $this->db->prepare($sql);
@@ -103,7 +103,7 @@ class ProductController extends Controller
      * @param array $args
      * @return Response
      */
-    public function update(Request $request, Response $response, array $args)
+    public function update(Request $request, Response $response, array $args): Response
     {
         try {
             $product = $this->fetchProduct($args['id']);
@@ -146,7 +146,7 @@ class ProductController extends Controller
      * @param array $args
      * @return Response
      */
-    public function delete(Request $request, Response $response, array $args)
+    public function delete(Request $request, Response $response, array $args): Response
     {
         try {
             $product = $this->fetchProduct($args['id']);
