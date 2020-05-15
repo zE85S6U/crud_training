@@ -10,22 +10,26 @@
     <label for="product">価格 :</label><?= yen($product['price']) ?>
 </div>
 <div>
-    <form action="/cart" method="post">
-        <label for="product">数量 :</label>
-        <select name="order_quantity">
-            <?php
-            for ($i = 1; $i <= $product['stock']; $i++) {
-                echo "<option value=$i>$i</option>";
-            }
-            ?>
-        </select>
-        <input type="submit" value="カートに入れる">
-        <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
-        <input type="hidden" name="product_name" value="<?= $product['product_name'] ?>">
-        <input type="hidden" name="price" value="<?= $product['price'] ?>">
-        <input type="hidden" name="stock" value="<?= $product['stock'] ?>">
-        <input type="hidden" name="image_dir" value="<?= '/image/' . $product['image_dir'] ?>">
-    </form>
+    <?php if ($product['stock'] < 1): ?>
+        <p>購入できません</p>
+    <?php else : ?>
+        <form action="/cart" method="post">
+            <label for="product">数量 :</label>
+            <select name="order_quantity">
+                <?php
+                for ($i = 1; $i <= $product['stock']; $i++) {
+                    echo "<option value=$i>$i</option>";
+                }
+                ?>
+            </select>
+            <input type="submit" value="カートに入れる">
+            <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
+            <input type="hidden" name="product_name" value="<?= $product['product_name'] ?>">
+            <input type="hidden" name="price" value="<?= $product['price'] ?>">
+            <input type="hidden" name="stock" value="<?= $product['stock'] ?>">
+            <input type="hidden" name="image_dir" value="<?= '/image/' . $product['image_dir'] ?>">
+        </form>
+    <?php endif ?>
 </div>
 <!--フッター-->
 <?= $this->fetch('footer.phtml') ?>
