@@ -77,7 +77,6 @@ class ProductController extends Controller
         return $response->withRedirect("/product");
     }
 
-
     /**
      * @param Request $request
      * @param Response $response

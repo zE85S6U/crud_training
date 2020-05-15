@@ -11,7 +11,7 @@
 </div>
 <div>
     <?php if ($product['stock'] < 1): ?>
-        <p>購入できません</p>
+        <p>在庫切れです</p>
     <?php else : ?>
         <form action="/cart" method="post">
             <label for="product">数量 :</label>

@@ -4,6 +4,7 @@ use Classes\Controllers\CartController;
 use Classes\Controllers\OrderController;
 use Classes\Controllers\ProductController;
 use Classes\Controllers\ShoppingController;
+use Classes\Controllers\UserController;
 use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -15,7 +16,21 @@ return function (App $app) {
     $app->get('/', ShoppingController::class . ':index');
 
     // 商品詳細
-    $app->get('/item/{id}', ShoppingController::class . ':show');
+    $app->get('/item/{id}', ShoppingController::class . ':getItem');
+
+    // 新規登録画面へ
+    $app->get('/signup', UserController::class . ':getSignup');
+
+    // 新規登録
+    $app->post('/signup', UserController::class . ':postSignup');
+
+    // ログインページへ
+    $app->get('/login', UserController::class . ':getLogin');
+
+    // ログイン
+    $app->post('/login', UserController::class . ':postLogin');
+
+    $app->get('/logout', UserController::class . ':logout');
 
     // カートを表示する
     $app->get('/cart', CartController::class . ':index');

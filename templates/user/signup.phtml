@@ -1,0 +1,12 @@
+<!--ヘッダー-->
+<?= $this->fetch('header.phtml') ?>
+
+<h3>新規登録</h3>
+
+<form action="/signup" method="post">
+    <label>ログイン名:</label><input type="text" name="login_id">
+    <label>パスワード:</label><input type="password" name="password">
+    <button>登録</button>
+</form>
+<!--フッター-->
+<?= $this->fetch('footer.phtml') ?>

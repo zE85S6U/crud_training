@@ -59,13 +59,12 @@ class OrderController extends Controller
      */
     private function insertOrder(): int
     {
-        // TODO ユーザ登録ロジックを作成$_SESSIONにユーザIDを記入しておく
-        // 仮のユーザID
-        $user_id = 1;
-//        $orders = $_SESSION
         $sql = 'INSERT INTO d_order(user_id, order_date) '
             . 'VALUES (:user_id, :order_date)';
         $stmt = $this->db->prepare($sql);
+
+        // ユーザIDを取得
+        $user_id = $_SESSION['user']['user_id'];
 
         // 現在時間を取得
         date_default_timezone_set('Asia/Tokyo');

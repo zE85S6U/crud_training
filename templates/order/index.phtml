@@ -17,9 +17,13 @@
             <hr>
         <?php endforeach; ?>
         <label for="product">合計 :</label><?= yen($_SESSION['carts']['total']) ?>
-        <div>
-            <a href="/order/submit" onclick="return confirm('本当に購入しますか？')">購入確定</a>
-        </div>
+        <?php if (isset($_SESSION['user'])) : ?>
+            <div>
+                <a href="/order/submit" onclick="return confirm('本当に購入しますか？')">購入確定</a>
+            </div>
+        <?php else: ?>
+            購入するには<a href="/login">ログイン</a>してください。
+        <?php endif; ?>
     <?php else : ?>
         <p>ショッピングカートに商品は入っていません。</p>
     <?php endif; ?>

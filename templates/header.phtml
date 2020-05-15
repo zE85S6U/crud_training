@@ -17,5 +17,9 @@
         <a href="/login">ログイン</a>
         <a href="/signup">新規登録</a>
     </navi>
+    <a href="">
+        <?= $_SESSION['user']['login_id'] ?? 'guest'; ?>
+    </a>
+    <a href="/logout">ログアウト</a>
 </header>
 <body>
