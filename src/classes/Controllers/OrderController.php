@@ -67,11 +67,13 @@ class OrderController extends Controller
             . 'VALUES (:user_id, :order_date)';
         $stmt = $this->db->prepare($sql);
 
+        // 現在時間を取得
+        date_default_timezone_set('Asia/Tokyo');
+        $date = date("Y/m/d H:i:s");
 
         // プリペアードステートメントを安全に代入
         // 仮のユーザID
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        $date = date("Y/m/d H:i:s");
         $stmt->bindParam(':order_date', $date, PDO::PARAM_STR);
 
         $result = $stmt->execute();

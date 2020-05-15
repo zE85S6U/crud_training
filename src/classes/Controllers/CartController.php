@@ -39,12 +39,16 @@ class CartController extends Controller
             return $response->withRedirect('/cart');
         }
 
-        // 追加済の場合は個数を追記する
+        // 追加済の場合は個数を追加する
         $index = array_search($toCart['product_id'], array_column($_SESSION['cart'], 'product_id'));
         if ($index === false) {
             $_SESSION['cart'][] = $toCart;
         } else {
-            $_SESSION['cart'][$index]['order_quantity'] += $toCart['order_quantity'];
+            // 注文個数を追記
+            $preorder = $_SESSION['cart'][$index]['order_quantity'] + $toCart['order_quantity'];
+            // 追加注文が在庫を上回る場合は追加しない
+            $_SESSION['cart'][$index]['order_quantity'] =
+                $preorder > $_SESSION['cart'][$index]['stock'] ? $_SESSION['cart'][$index]['order_quantity'] : $preorder;
         }
 
         $this->minerTotal();
@@ -79,7 +83,10 @@ class CartController extends Controller
         }
     }
 
-    private function total()
+    /**
+     * 合計を計算
+     */
+    private function total(): void
     {
         $sumArr = array_column($_SESSION['cart'], 'miner_total');
         $sum = array_sum($sumArr);
