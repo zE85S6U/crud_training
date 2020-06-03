@@ -13,7 +13,7 @@ use Slim\Http\Response;
 class ProductController extends Controller
 {
     // 商品画像の保存ディレクトリ
-    const FILE_DIR = __DIR__ . '/../../../public/image/';
+    const FILE_DIR = __DIR__ . '/../../../public/image/file/';
 
     /**
      * 商品一覧
