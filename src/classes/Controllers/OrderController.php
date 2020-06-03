@@ -24,7 +24,7 @@ class OrderController extends Controller
     }
 
     /**
-     *
+     * 購入確定
      * @param Request $request
      * @param Response $response
      * @return ResponseInterface
@@ -39,9 +39,13 @@ class OrderController extends Controller
         // カートをリセット
         $this->resetSession();
 
-        // TODO 購入完了画面へ遷移する
-        return $this->renderer->render($response, '/order/index.phtml');
+        // お届けページへ
+        return $response->withRedirect("/order/delivery");
     }
+    public function greet(Request $request, Response $response): ResponseInterface {
+        return $this->renderer->render($response, '/order/delivery.phtml');
+    }
+
 
     /**
      * 注文が完了したらカートをリセットする

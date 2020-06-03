@@ -1,35 +1,63 @@
 <!--ヘッダー-->
 <?= $this->fetch('header.phtml') ?>
+<div class="container">
+    <div class="row justify-content-center">
+        <!-- 商品名 -->
+        <div class="col-xs-12">
+            <h3><?= $product['product_name'] ?></h3>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <!-- 商品画像 -->
+        <div class="col-md-6">
+            <img class="img-thumbnail" src="<?= '/image/file/' . $product['image_dir'] ?>" alt="商品画像">
+        </div>
+        <!-- 商品詳細 -->
+        <div class="col-md-6">
+            <!-- 商品説明 -->
+            <p>
+                <?= $product['description'] ?><br>
+                商品の説明文がここに入る<br>
+                「旅のはじまりのビール」ボトル（330ml）の24本セット。十勝士幌町にある岡田農場さんの大麦麦芽100%を使った「十勝バージョン」（賞味期限：2020年6月29日まで）。
 
-<h3>購入商品詳細</h3>
+                24本セットは業務用の簡易梱包でお届け。
 
-<div>
-    <img src="<?= '/image/' . $product['image_dir'] ?>" alt="商品画像" width="300" height="200">
-    <label for="product">説明 :</label><?= $product['description'] ?>
-    <label for="product">商品名 :</label><?= $product['product_name'] ?>
-    <label for="product">価格 :</label><?= yen($product['price']) ?>
-</div>
-<div>
-    <?php if ($product['stock'] < 1): ?>
-        <p>在庫切れです</p>
-    <?php else : ?>
-        <form action="/cart" method="post">
-            <label for="product">数量 :</label>
-            <select name="order_quantity">
-                <?php
-                for ($i = 1; $i <= $product['stock']; $i++) {
-                    echo "<option value=$i>$i</option>";
-                }
-                ?>
-            </select>
-            <input type="submit" value="カートに入れる">
-            <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
-            <input type="hidden" name="product_name" value="<?= $product['product_name'] ?>">
-            <input type="hidden" name="price" value="<?= $product['price'] ?>">
-            <input type="hidden" name="stock" value="<?= $product['stock'] ?>">
-            <input type="hidden" name="image_dir" value="<?= '/image/' . $product['image_dir'] ?>">
+                一つの大麦畑で収穫された大麦のみを使用する日本では珍しい「シングルモルト」のクラフトビール。作り手の思いをFarm to Tableで大切な人にお届けください。
+
+            </p>
+            <!-- 価格 -->
+            <p class="display-4"><?= yen($product['price']) ?></p>
+            <!-- 在庫切れの場合 -->
+            <?php if ($product['stock'] < 1): ?>
+                <p class="alert-danger">在庫切れです</p>
+            <?php else : ?>
+            <!-- 注文個数 -->
+            <form class=”form-inline” action="/cart" method="post">
+                <div class="form-group">
+                    <label for="product">数量 </label>
+                </div>
+                <div class="form-group">
+                    <select class="form-control" name="order_quantity">
+                        <?php
+                        for ($i = 1; $i <= $product['stock']; $i++) {
+                            echo "<option value=$i>$i</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary">カートに入れる</button>
+                    <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
+                    <input type="hidden" name="product_name" value="<?= $product['product_name'] ?>">
+                    <input type="hidden" name="price" value="<?= $product['price'] ?>">
+                    <input type="hidden" name="stock" value="<?= $product['stock'] ?>">
+                    <input type="hidden" name="image_dir" value="<?= '/image/file/' . $product['image_dir'] ?>">
+                </div>
+        </div>
         </form>
-    <?php endif ?>
+        <?php endif ?>
+    </div>
+</div>
 </div>
 <!--フッター-->
 <?= $this->fetch('footer.phtml') ?>

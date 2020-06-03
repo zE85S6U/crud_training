@@ -12,12 +12,12 @@ use Slim\Http\Response;
 class UserController extends Controller
 {
     // 新規登録画面
-    public function getSignup(Request $request, Response $response) {
+    public function index(Request $request, Response $response) {
         return $this->renderer->render($response, '/user/signup.phtml');
     }
 
     // ユーザを登録
-    public function postSignup(Request $request, Response $response) {
+    public function store(Request $request, Response $response) {
         $loginid = e($request->getParsedBodyParam('login_id'));
         $password = password_hash($request->getParsedBodyParam('password'), PASSWORD_DEFAULT );
 
@@ -39,12 +39,12 @@ class UserController extends Controller
     }
 
     // ログインページへ
-    public function getLogin(Request $request, Response $response) {
+    public function show(Request $request, Response $response) {
         return $this->renderer->render($response, '/user/login.phtml');
     }
 
     // ログイン
-    public function postLogin(Request $request, Response $response) {
+    public function login(Request $request, Response $response) {
         $loginid = e($request->getParsedBodyParam('login_id'));
         $password = $request->getParsedBodyParam('password');
 
@@ -54,13 +54,13 @@ class UserController extends Controller
         $stmt->execute();
         $user = $stmt->fetch();
 
-        if (password_verify($password, $user['password'])) {
+        if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user']['user_id'] = (int)$user['user_id'];
             $_SESSION['user']['login_id']= $user['login_id'];
             // 正常に認証出来たらTOPページへリダイレクトする
             return $response->withRedirect("/");
         } else {
-            echo 'Invalid password.';
+        echo 'ログインできません　ログイン名かパスワードを確認してください。';
         }
     }
 

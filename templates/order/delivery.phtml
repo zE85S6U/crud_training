@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #train {
+            position: relative;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<h1>お届けします</h1>
+
+<img id="train" width="100" height="100"
+     src="https://d14vkpijithoml.cloudfront.net/static/ckfinder/upload/images/20160229213900.png">
+
+<a href="/" id="fin">配送完了！！</a>
+<script>
+    train.onload = function () {
+        let start = Date.now();
+        document.getElementById("fin").style.visibility = "hidden";
+
+        let end = document.getElementById("fin");
+        let timer = setInterval(function () {
+            let timePassed = Date.now() - start;
+
+            train.style.left = timePassed / 5 + 'px';
+
+            if (timePassed > 4000) {
+                clearInterval(timer);
+                end.style.visibility = "visible";
+            }
+        }, 20);
+    }
+</script>
+</body>
+</html>

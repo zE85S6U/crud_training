@@ -35,7 +35,7 @@ class ShoppingController extends Controller
      * @param array $args
      * @return ResponseInterface
      */
-    public function getItem(Request $request, Response $response, array $args): ResponseInterface
+    public function show(Request $request, Response $response, array $args): ResponseInterface
     {
         $sql = 'SELECT * FROM m_product WHERE product_id = :id';
         $stmt = $this->db->prepare($sql);

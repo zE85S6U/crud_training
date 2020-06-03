@@ -16,20 +16,21 @@ return function (App $app) {
     $app->get('/', ShoppingController::class . ':index');
 
     // 商品詳細
-    $app->get('/item/{id}', ShoppingController::class . ':getItem');
+    $app->get('/item/{id}', ShoppingController::class . ':show');
 
     // 新規登録画面へ
-    $app->get('/signup', UserController::class . ':getSignup');
+    $app->get('/signup', UserController::class . ':index');
 
     // 新規登録
-    $app->post('/signup', UserController::class . ':postSignup');
+    $app->post('/signup', UserController::class . ':store');
 
     // ログインページへ
-    $app->get('/login', UserController::class . ':getLogin');
+    $app->get('/login', UserController::class . ':show');
 
     // ログイン
-    $app->post('/login', UserController::class . ':postLogin');
+    $app->post('/login', UserController::class . ':login');
 
+    // ログアウト
     $app->get('/logout', UserController::class . ':logout');
 
     // カートを表示する
@@ -49,6 +50,9 @@ return function (App $app) {
 
     // 購入確定
     $app->get('/order/submit', OrderController::class . ':submit');
+
+    // お届けページへ
+    $app->get('/order/delivery', OrderController::class . ':greet');
 
     // 商品一覧画面
     $app->get('/product', ProductController::class . ':index');
