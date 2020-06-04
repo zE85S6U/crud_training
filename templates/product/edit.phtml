@@ -1,17 +1,64 @@
 <!--ヘッダー-->
 <?= $this->fetch('header.phtml') ?>
 
-<h3>商品管理</h3>
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>商品管理</h2>
+    </div>
+    <div class="col-md-12 order-md-1">
+        <form class="needs-validation" action="/product/<?= $product['product_id'] ?>" method="post"
+              enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="productName">商品名</label>
+                    <input type="text" class="form-control" name="product_name" id="productName" placeholder=""
+                           value="<?= $product['product_name'] ?>"
+                           required>
+                    <div class="invalid-feedback">
+                        商品名を入力してください
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="productPrice">価格</label>
+                    <input type="number" min="0" class="form-control" name="price" id="productPrice" placeholder=""
+                           value="<?= $product['price'] ?>"
+                           required>
+                    <div class="invalid-feedback">
+                        価格を入力してください
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="productStock">在庫</label>
+                    <input type="number" min="0" class="form-control" name="stock" id="productStock" placeholder=""
+                           value="<?= $product['stock'] ?>"
+                           required>
+                    <div class="invalid-feedback">
+                        在庫数を入力してください
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="productDescription">説明文:</label>
+                <textarea class="form-control" rows="10" name="description" id="productDescription" placeholder=""
+                          required>
+                    <?= $product['description'] ?>
+                </textarea>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="productImage">商品画像</label>
+                    <input type="file" class="form-control-file" name="image_dir" id="productImage"
+                           accept=".jpg, jpeg, png" required">
+                </div>
+            </div>
+            <hr class="mb-4">
+            <button class="btn btn-primary btn-lg btn-block" type="submit">更新</button>
+            <button class="btn btn-danger btn-lg btn-block" name="_METHOD" value="delete"
+                    onclick="return confirm('本当に削除しますか？')">削除
+            </button>
+        </form>
+    </div>
+</div>
 
-<form action="/product/<?= $product['product_id'] ?>" method="post" enctype="multipart/form-data">
-    <label>商品名:</label><input type="text" name="product_name" value="<?= $product['product_name'] ?>">
-    <label>価格:</label><input type="number" name="price" value="<?= $product['price'] ?>">
-    <label>在庫数:</label><input type="number" name="stock" value="<?= $product['stock'] ?>">
-    <label>説明文:</label><textarea name="description" cols="30" rows="10"><?= $product['description'] ?></textarea>
-    <label>商品画像:</label><input type="file" name="image_dir" accept=".jpg, jpeg, png">
-
-    <button>更新</button>
-    <button name="_METHOD" value="delete" onclick="return confirm('本当に削除しますか？')">削除</button>
-</form>
 <!--フッター-->
 <?= $this->fetch('footer.phtml') ?>
