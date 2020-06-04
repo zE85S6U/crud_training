@@ -35,8 +35,8 @@
                                     ?>
                                 </select>
                                 <input type="hidden" name="index" value="<?= $index ?>">
-                                <button class="btn btn-primary">更新</button>
-                                <a class="btn btn-danger" role="button" href=/cart/<?= $index ?>>削除</a>
+                                <button class="btn btn-outline-success btn-sm">更新</button>
+                                <a class="btn btn-outline-danger btn-sm" role="button" href=/cart/<?= $index ?>>削除</a>
                             </form>
                             <span class="col-lg-3 col-md-12">小計 :<?= yen($item['miner_total']) ?></span>
                         </li>
@@ -46,9 +46,10 @@
             <span class="h4 row pr-4 justify-content-end">合計 :<?= yen($_SESSION['carts']['total']) ?></span>
         </div>
     </div>
-    <div class="row justify-content-end border border-secondary rounded  m-1">
-        <a class="h5 p-4" href="/order">購入</a>
+    <div class="row m-1">
+        <a role="button" class="text-white btn btn-primary btn-lg btn-block" href="/order">購入</a>
     </div>
+
     <?php else : ?>
         <p class="p-4 h5 text-center">ショッピングカートに商品は入っていません。</p>
     <?php endif; ?>

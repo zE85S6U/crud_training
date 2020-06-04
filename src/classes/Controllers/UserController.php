@@ -53,6 +53,7 @@ class UserController extends Controller
         $stmt->bindParam(':login_id', $loginid, PDO::PARAM_STR);
         $stmt->execute();
         $user = $stmt->fetch();
+        var_dump($user);
 
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user']['user_id'] = (int)$user['user_id'];
