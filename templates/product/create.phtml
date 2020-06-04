@@ -1,22 +1,12 @@
 <!--ヘッダー-->
 <?= $this->fetch('header.phtml') ?>
 
-<!--<form>-->
-<!--    <label>商品名:</label><input type="text" name="product_name">-->
-<!--    <label>価格:</label><input type="number" name="price">-->
-<!--    <label>在庫数:</label><input type="number" name="stock">-->
-<!--    <label>説明文:</label><textarea name="description" cols="40" rows="6"></textarea>-->
-<!--    <label>商品画像:</label><input type="file" name="image_dir" id="" accept=".jpg, jpeg, png" required="required">-->
-<!---->
-<!--    <button>追加</button>-->
-<!--</form>-->
-
 <div class="container">
     <div class="py-5 text-center">
         <h2>商品追加</h2>
     </div>
     <div class="col-md-12 order-md-1">
-        <form class="needs-validation" action="/product" method="post" enctype="multipart/form-data" novalidate>
+        <form class="needs-validation" action="/product" method="post" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-md-12 mb-3">
                     <label for="productName">商品名</label>
@@ -28,7 +18,8 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="productPrice">価格</label>
-                    <input type="number" min="0" class="form-control" name="price" id="productPrice" placeholder="" value=""
+                    <input type="number" min="0" class="form-control" name="price" id="productPrice" placeholder=""
+                           value=""
                            required>
                     <div class="invalid-feedback">
                         価格を入力してください
@@ -36,7 +27,8 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="productStock">在庫</label>
-                    <input type="number" min="0" class="form-control" name="stock" id="productStock" placeholder="" value=""
+                    <input type="number" min="0" class="form-control" name="stock" id="productStock" placeholder=""
+                           value=""
                            required>
                     <div class="invalid-feedback">
                         在庫数を入力してください
@@ -52,14 +44,13 @@
                 <div class="col-md-12 mb-3">
                     <label for="productImage">商品画像</label>
                     <input type="file" class="form-control-file" name="image_dir" id="productImage"
-                           accept=".jpg, jpeg, png" required="required">
+                           accept=".jpg, jpeg, png" required">
                 </div>
             </div>
             <hr class="mb-4">
             <button class="btn btn-primary btn-lg btn-block" type="submit">商品を追加する</button>
         </form>
     </div>
-</div>
 </div>
 
 <!--フッター-->
