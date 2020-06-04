@@ -3,9 +3,6 @@
 <div class="container">
     <h3>購入確認</h3>
 
-    <div class="row justify-content-center border border-secondary rounded  m-1">
-        <a class="p-4 h5" href="/">買い物を続ける</a>
-    </div>
     <!-- カート内商品一覧 -->
     <div class="border border-secondary rounded  m-1 ">
         <div class="col-sm-12 mb-4">
@@ -28,6 +25,9 @@
         </div>
     </div>
     <?php if (isset($_SESSION['user'])) : ?>
+        <div class="row m-1">
+            <a role="button" class="text-white btn btn-secondary btn-lg btn-block" href="/cart">カートに戻る</a>
+        </div>
         <div class="row m-1">
             <a role="button" class="text-white btn btn-primary btn-lg btn-block" href="/order/submit"
                onclick="return confirm('本当に購入しますか？')">購入確定</a>

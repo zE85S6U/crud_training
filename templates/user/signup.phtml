@@ -1,12 +1,21 @@
 <!--ヘッダー-->
 <?= $this->fetch('header.phtml') ?>
 
-<h3>新規登録</h3>
-
-<form action="/signup" method="post">
-    <label>ログイン名:</label><input type="text" name="login_id">
-    <label>パスワード:</label><input type="password" name="password">
-    <button>登録</button>
-</form>
+<div class="container">
+    <form action="/signup" method="post" class="form-signin">
+        <h1 class="h3 mb-3 font-weight-normal">新規登録</h1>
+        <label for="inputName" class="sr-only">ログイン名</label>
+        <input type="text" name="login_id" id="inputName" class="form-control" placeholder="ログイン名" required autofocus>
+        <label for="inputPassword" class="sr-only">パスワード</label>
+        <input type="password" name="password" id="inputPassword" class="form-control" placeholder="パスワード" required>
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" value="remember-me" id="rememberCheck">
+            <label class="form-check-label" for="rememberCheck">
+                状態を記憶する
+            </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block mb-3" type="submit">新規登録する</button>
+    </form>
+</div>
 <!--フッター-->
 <?= $this->fetch('footer.phtml') ?>

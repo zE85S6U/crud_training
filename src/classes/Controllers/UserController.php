@@ -53,11 +53,11 @@ class UserController extends Controller
         $stmt->bindParam(':login_id', $loginid, PDO::PARAM_STR);
         $stmt->execute();
         $user = $stmt->fetch();
-        var_dump($user);
 
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user']['user_id'] = (int)$user['user_id'];
             $_SESSION['user']['login_id']= $user['login_id'];
+            $_SESSION['user']['auth']= $user['auth'];
             // 正常に認証出来たらTOPページへリダイレクトする
             return $response->withRedirect("/");
         } else {
