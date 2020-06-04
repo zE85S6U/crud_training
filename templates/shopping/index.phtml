@@ -68,11 +68,11 @@
     </div>
 </div>
 <!--商品-->
-<div class="row">
+<div class="card-group">
     <?php foreach ($products as $product): ?>
         <div class="cardtext-white col-lg-3 col-md-4 col-sm-12 p-0">
             <a class="text-white" href="/item/<?= $product['product_id'] ?>">
-                <img class="card-img-top" src="<?= '/image/file/' . $product['image_dir'] ?>" alt="商品画像">
+                <img class="card-img" src="<?= '/image/file/' . $product['image_dir'] ?>" alt="商品画像">
 
                 <div class="card-img-overlay">
                     <h5 class="card-title"><?= $product['product_name'] ?></h5>
