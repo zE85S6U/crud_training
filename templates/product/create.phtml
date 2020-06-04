@@ -1,16 +1,66 @@
 <!--ヘッダー-->
 <?= $this->fetch('header.phtml') ?>
 
-<h3>商品追加</h3>
+<!--<form>-->
+<!--    <label>商品名:</label><input type="text" name="product_name">-->
+<!--    <label>価格:</label><input type="number" name="price">-->
+<!--    <label>在庫数:</label><input type="number" name="stock">-->
+<!--    <label>説明文:</label><textarea name="description" cols="40" rows="6"></textarea>-->
+<!--    <label>商品画像:</label><input type="file" name="image_dir" id="" accept=".jpg, jpeg, png" required="required">-->
+<!---->
+<!--    <button>追加</button>-->
+<!--</form>-->
 
-<form action="/product" method="post"  enctype="multipart/form-data">
-    <label>商品名:</label><input type="text" name="product_name">
-    <label>価格:</label><input type="number" name="price">
-    <label>在庫数:</label><input type="number" name="stock">
-    <label>説明文:</label><textarea name="description" cols="40" rows="6"></textarea>
-    <label>商品画像:</label><input type="file" name="image_dir" id="" accept=".jpg, jpeg, png" required="required">
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>商品追加</h2>
+    </div>
+    <div class="col-md-12 order-md-1">
+        <form class="needs-validation" action="/product" method="post" enctype="multipart/form-data" novalidate>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="productName">商品名</label>
+                    <input type="text" class="form-control" name="product_name" id="productName" placeholder="" value=""
+                           required>
+                    <div class="invalid-feedback">
+                        商品名を入力してください
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="productPrice">価格</label>
+                    <input type="number" min="0" class="form-control" name="price" id="productPrice" placeholder="" value=""
+                           required>
+                    <div class="invalid-feedback">
+                        価格を入力してください
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="productStock">在庫</label>
+                    <input type="number" min="0" class="form-control" name="stock" id="productStock" placeholder="" value=""
+                           required>
+                    <div class="invalid-feedback">
+                        在庫数を入力してください
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="productDescription">説明文:</label>
+                <textarea class="form-control" rows="10" name="description" id="productDescription" placeholder="商品の説明文"
+                          required></textarea>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="productImage">商品画像</label>
+                    <input type="file" class="form-control-file" name="image_dir" id="productImage"
+                           accept=".jpg, jpeg, png" required="required">
+                </div>
+            </div>
+            <hr class="mb-4">
+            <button class="btn btn-primary btn-lg btn-block" type="submit">商品を追加する</button>
+        </form>
+    </div>
+</div>
+</div>
 
-    <button>追加</button>
-</form>
 <!--フッター-->
 <?= $this->fetch('footer.phtml') ?>
