@@ -18,13 +18,9 @@
         </thead>
         <tbody>
         <?php foreach ($products as $product): ?>
-            <tr>
+            <tr data-href="/product/<?= $product['product_id'] ?>">
                 <th scope="row"><?= ($product['product_id']) ?></th>
-                <td class="position-relative">
-                    <a class="stretched-link" href="/product/<?= $product['product_id'] ?>">
-                        <?= e($product['product_name']) ?>
-                    </a>
-                </td>
+                <td><?= e($product['product_name']) ?></td>
                 <td><?= $product['price'] ?></td>
                 <td><?= stock_confirmation($product['stock']) ?></td>
             </tr>

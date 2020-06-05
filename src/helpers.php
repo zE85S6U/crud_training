@@ -20,7 +20,7 @@ if (!function_exists('stock_confirmation')) {
     function stock_confirmation(int $stock)
     {
         if ($stock < 1) {
-            return '<p class="d-inline alert alert-danger" role="alert"><strong>在庫切れ！</strong></p>';
+            return '<p class="d-inline alert alert-danger" role="alert"><strong>SOLD OUT</strong></p>';
         } else {
             return $stock;
         }
