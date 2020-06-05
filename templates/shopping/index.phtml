@@ -77,7 +77,7 @@
                 <div class="card-img-overlay">
                     <h5 class="card-title"><?= $product['product_name'] ?></h5>
                     <p class="card-text">price : <?= yen($product['price']) ?></p>
-                    <p class="card-text">stock : <?= ($product['stock']) ?></p>
+                    <p class="card-text">stock : <?= stock_confirmation($product['stock']) ?></p>
                 </div>
             </a>
         </div>

@@ -1,15 +1,37 @@
 <!--ヘッダー-->
 <?= $this->fetch('header.phtml') ?>
 
-<h3>商品一覧</h3>
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>商品一覧</h2>
+    </div>
 
-<a href="/product/create">新商品の追加</a>
-<?php foreach ($products as $product): ?>
-    <li class="list-group-item">
-        <a href="/product/<?= $product['product_id'] ?>">
-            <?= e($product['product_name']) ?>
-        </a>
-    </li>
-<?php endforeach; ?>
+    <table class="table table-hover">
+        <caption>商品一覧</caption>
+        <thead>
+        <tr>
+            <th>商品番号</th>
+            <th scope="col">商品名</th>
+            <th scope="col">価格</th>
+            <th scope="col">在庫</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($products as $product): ?>
+            <tr>
+                <th scope="row"><?= ($product['product_id']) ?></th>
+                <td class="position-relative">
+                    <a class="stretched-link" href="/product/<?= $product['product_id'] ?>">
+                        <?= e($product['product_name']) ?>
+                    </a>
+                </td>
+                <td><?= $product['price'] ?></td>
+                <td><?= stock_confirmation($product['stock']) ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
 <!--フッター-->
 <?= $this->fetch('footer.phtml') ?>

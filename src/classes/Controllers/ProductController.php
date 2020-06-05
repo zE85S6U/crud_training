@@ -23,7 +23,7 @@ class ProductController extends Controller
      */
     public function index(Request $request, Response $response): ResponseInterface
     {
-        $sql = 'SELECT * FROM m_product';
+        $sql = 'SELECT * FROM m_product ORDER BY product_id';
         $stmt = $this->db->query($sql);
         $products = $stmt->fetchAll();
         $data = ['products' => $products];
