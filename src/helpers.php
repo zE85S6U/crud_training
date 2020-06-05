@@ -1,5 +1,6 @@
 <?php
 
+// 文字列を安全にする
 if (!function_exists('e')) {
     function e(string $s): string
     {
@@ -7,7 +8,7 @@ if (!function_exists('e')) {
     }
 }
 
-//日本円表記にする
+// 日本円表記にする
 if (!function_exists('yen')) {
     function yen(string $s): string
     {
@@ -15,7 +16,7 @@ if (!function_exists('yen')) {
     }
 }
 
-//在庫を確認する
+// 在庫を確認する
 if (!function_exists('stock_confirmation')) {
     function stock_confirmation(int $stock)
     {
@@ -23,6 +24,21 @@ if (!function_exists('stock_confirmation')) {
             return '<p class="d-inline alert alert-danger" role="alert"><strong>SOLD OUT</strong></p>';
         } else {
             return $stock;
+        }
+    }
+}
+
+// 管理者のみアクセスできるページの制限
+if (!function_exists('isAdmin')) {
+    function isAdmin()
+    {
+        if (!isset($_SESSION['user'])) {
+            header('Location: /');
+            //以下の処理を行わない
+            exit();
+        } else if (!$_SESSION['user']['auth']) {
+            header('Location: /');
+            exit();
         }
     }
 }

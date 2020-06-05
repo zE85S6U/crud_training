@@ -1,3 +1,5 @@
+<!--管理者以外は入れない-->
+<?php isAdmin(); ?>
 <!--ヘッダー-->
 <?= $this->fetch('header.phtml') ?>
 
@@ -27,6 +29,10 @@
         <?php endforeach; ?>
         </tbody>
     </table>
+
+    <div class="row m-1">
+        <a role="button" class="text-white btn btn-success btn-lg btn-block" href="/product/create">商品追加</a>
+    </div>
 </div>
 
 <!--フッター-->
