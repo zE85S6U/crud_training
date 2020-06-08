@@ -16,8 +16,7 @@
         <div class="col-md-6">
             <!-- 商品説明 -->
             <p>
-                <?= $product['description'] ?><br>
-                商品の説明文がここに入る<br>
+                <?= $product['description'] ?>
             </p>
             <!-- 価格 -->
             <p class="display-4"><?= yen($product['price']) ?></p>
@@ -51,7 +50,6 @@
         </form>
         <?php endif ?>
     </div>
-</div>
 </div>
 <!--フッター-->
 <?= $this->fetch('footer.phtml') ?>

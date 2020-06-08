@@ -1,3 +1,4 @@
+/*ボディタグ全体*/
 body {
     display: -ms-flexbox;
     display: flex;
@@ -7,6 +8,7 @@ body {
     background-color: #f5f5f5;
 }
 
+/*サインイン*/
 .form-signin {
     width: 100%;
     max-width: 330px;
@@ -35,4 +37,16 @@ body {
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+/*ニュース*/
+dt{
+    float: left;
+    clear: left ;
+    margin-right: 0.5em ;
+    width: 120px ;
+}
+
+dd{
+    margin-left: 1em ;
 }
