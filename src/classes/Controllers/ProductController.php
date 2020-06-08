@@ -78,6 +78,7 @@ class ProductController extends Controller
     }
 
     /**
+     * 商品詳細をIDで取得
      * @param Request $request
      * @param Response $response
      * @param array $args
@@ -107,7 +108,9 @@ class ProductController extends Controller
         try {
             $product = $this->fetchProduct($args['id']);
         } catch (Exception $e) {
-            return $response->withStatus(404)->write($e->getMessage());
+            return $response->withStatus(404)
+                ->withHeader('Content-Type', 'text/html')
+                ->write($e->getMessage());
         }
 
         // 画像ファイルをサーバにアップロード
@@ -115,6 +118,7 @@ class ProductController extends Controller
             $image = $this->imgUpload();
         }
 
+        // 更新前の商品を取得
         $product['product_name'] = $request->getParsedBodyParam('product_name');
         $product['price'] = $request->getParsedBodyParam('price');
         $product['stock'] = $request->getParsedBodyParam('stock');

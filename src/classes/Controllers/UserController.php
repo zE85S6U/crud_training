@@ -6,19 +6,30 @@ namespace Classes\Controllers;
 
 use Exception;
 use PDO;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class UserController extends Controller
 {
-    // 新規登録画面
-    public function index(Request $request, Response $response)
+    /**
+     * 新規登録画面
+     * @param Request $request
+     * @param Response $response
+     * @return ResponseInterface
+     */
+    public function index(Request $request, Response $response): ResponseInterface
     {
         return $this->renderer->render($response, '/user/signup.phtml');
     }
 
-    // ユーザを登録
-    public function store(Request $request, Response $response)
+    /**
+     * ユーザを登録
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function store(Request $request, Response $response): Response
     {
         $loginid = e($request->getParsedBodyParam('login_id'));
         $password = password_hash($request->getParsedBodyParam('password'), PASSWORD_DEFAULT);
@@ -42,14 +53,24 @@ class UserController extends Controller
         return $response->withRedirect("/");
     }
 
-    // ログインページへ
-    public function show(Request $request, Response $response)
+    /**
+     * ログインページへ
+     * @param Request $request
+     * @param Response $response
+     * @return ResponseInterface
+     */
+    public function show(Request $request, Response $response): ResponseInterface
     {
         return $this->renderer->render($response, '/user/login.phtml');
     }
 
-    // ログイン
-    public function login(Request $request, Response $response)
+    /**
+     * ログイン
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function login(Request $request, Response $response): Response
     {
         $loginid = e($request->getParsedBodyParam('login_id'));
         $password = $request->getParsedBodyParam('password');
@@ -60,19 +81,30 @@ class UserController extends Controller
         $stmt->execute();
         $user = $stmt->fetch();
 
+        if (!$user) {
+            return $response
+                ->withStatus(403)
+                ->withHeader('Content-Type', 'text/html')
+                ->write('ログインできません　ログイン名かパスワードを確認してください。');
+        }
+
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user']['user_id'] = (int)$user['user_id'];
             $_SESSION['user']['login_id'] = $user['login_id'];
             $_SESSION['user']['auth'] = $user['auth'];
-            // 正常に認証出来たらTOPページへリダイレクトする
-            return $response->withRedirect("/");
-        } else {
-            echo 'ログインできません　ログイン名かパスワードを確認してください。';
         }
+
+        // 正常に認証出来たらTOPページへリダイレクトする
+        return $response->withRedirect("/");
     }
 
-    // ログアウト
-    public function logout(Request $request, Response $response)
+    /**
+     * ログアウト
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function logout(Request $request, Response $response): Response
     {
         unset($_SESSION['user']);
         return $response->withRedirect("/");

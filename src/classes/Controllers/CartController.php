@@ -12,6 +12,7 @@ class CartController extends Controller
 {
 
     /**
+     * カート画面
      * @param Request $request
      * @param Response $response
      * @return ResponseInterface

@@ -30,7 +30,7 @@ class OrderController extends Controller
      * @return ResponseInterface
      * @throws Exception
      */
-    public function submit(Request $request, Response $response)
+    public function submit(Request $request, Response $response): ResponseInterface
     {
         // 購入商品をデータベースに登録
         $order_id = $this->insertOrder();
@@ -42,10 +42,17 @@ class OrderController extends Controller
         // お届けページへ
         return $response->withRedirect("/order/delivery");
     }
-    public function greet(Request $request, Response $response): ResponseInterface {
+
+    /**
+     * お届けページ
+     * @param Request $request
+     * @param Response $response
+     * @return ResponseInterface
+     */
+    public function greet(Request $request, Response $response): ResponseInterface
+    {
         return $this->renderer->render($response, '/order/delivery.phtml');
     }
-
 
     /**
      * 注文が完了したらカートをリセットする
@@ -56,9 +63,10 @@ class OrderController extends Controller
         unset($_SESSION['carts']);
     }
 
+
     /**
      * 注文したユーザと日付を登録
-     * @return int
+     * @return int 登録ID
      * @throws Exception
      */
     private function insertOrder(): int
@@ -75,18 +83,16 @@ class OrderController extends Controller
         $date = date("Y/m/d H:i:s");
 
         // プリペアードステートメントを安全に代入
-        // 仮のユーザID
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->bindParam(':order_date', $date, PDO::PARAM_STR);
 
         $result = $stmt->execute();
-        $order_id = (int)$this->db->lastInsertId();
-
         if (!$result) {
             throw new Exception
             ('could not save the product');
         }
-        return $order_id;
+
+        return (int)$this->db->lastInsertId();;
     }
 
     /**
