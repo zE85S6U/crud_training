@@ -1,5 +1,6 @@
 /*ボディタグ全体*/
 body {
+    font-family: 'Roboto', sans-serif;
     display: -ms-flexbox;
     display: flex;
     -ms-flex-align: center;
