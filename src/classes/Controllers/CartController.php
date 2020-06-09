@@ -52,8 +52,11 @@ class CartController extends Controller
                 $preorder > $_SESSION['cart'][$index]['stock'] ? $_SESSION['cart'][$index]['order_quantity'] : $preorder;
         }
 
+        // 小計を計算
         $this->minerTotal();
+        // 合計を計算
         $this->total();
+
         return $response->withRedirect('/cart');
     }
 
@@ -123,6 +126,7 @@ class CartController extends Controller
     public function delete(Request $request, Response $response, array $args): Response
     {
         array_splice($_SESSION['cart'], $args['id'], 1);
+        // 合計金額を再計算する
         $this->total();
 
         return $response->withRedirect('/cart');

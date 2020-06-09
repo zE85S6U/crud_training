@@ -89,7 +89,7 @@ class OrderController extends Controller
         $result = $stmt->execute();
         if (!$result) {
             throw new Exception
-            ('could not save the product');
+            ('注文データ登録に失敗しました');
         }
 
         return (int)$this->db->lastInsertId();;
@@ -120,14 +120,14 @@ class OrderController extends Controller
             $this->reCalculateStock(['product_id' => $item['product_id'], 'order_quantity' => $item['order_quantity']]);
             if (!$result) {
                 throw new Exception
-                ('could not save the product');
+                ('詳細注文データ登録に失敗しました');
             }
         }
     }
 
     /**
      * 在庫の再計算をする
-     * @param $products
+     * @param $products 購入された商品IDと個数の配列
      */
     private function reCalculateStock($products): void
     {

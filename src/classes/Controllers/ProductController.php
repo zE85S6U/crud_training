@@ -70,7 +70,7 @@ class ProductController extends Controller
 
         if (!$result) {
             throw new Exception
-            ('could not save the product');
+            ('商品登録に失敗しました');
         }
 
         // 保存が正常に出来たら一覧ページへリダイレクトする
@@ -92,6 +92,12 @@ class ProductController extends Controller
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         $product = $stmt->fetch();
+
+        // 存在しない商品番号にアクセスした場合
+        if (!$product) {
+            return $response->withStatus(404)->write('not found');
+        }
+
         $data = ['product' => $product];
         return $this->renderer->render($response, '/product/edit.phtml', $data);
     }

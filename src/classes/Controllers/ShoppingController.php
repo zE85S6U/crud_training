@@ -43,6 +43,12 @@ class ShoppingController extends Controller
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         $product = $stmt->fetch();
+
+        // 存在しない商品番号にアクセスした場合
+        if (!$product) {
+            return $response->withStatus(404)->write('not found');
+        }
+
         $data = ['product' => $product];
         return $this->renderer->render($response, '/shopping/item.phtml', $data);
     }
