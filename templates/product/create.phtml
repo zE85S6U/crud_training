@@ -45,13 +45,15 @@
             </div>
             <div class="row">
                 <div class="col-md-12 mb-3">
-                    <label for="productImage">商品画像</label>
+                    <label for="productImage">商品画像(2MBまで)</label>
                     <input type="file" class="form-control-file" name="image_dir" id="productImage"
-                           accept=".jpg, jpeg, png" required">
+                           accept=".jpg,.gif,.png,image/gif,image/jpeg,image/png" required">
+                    <div class="preview">
+                    </div>
                 </div>
             </div>
             <hr class="mb-4">
-            <button class="btn btn-primary btn-lg btn-block" type="submit">商品を追加する</button>
+            <button class="btn btn-primary btn-lg btn-block imageSubmit" type="submit">商品を追加する</button>
         </form>
     </div>
 </div>

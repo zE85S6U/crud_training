@@ -120,8 +120,14 @@ class ProductController extends Controller
         }
 
         // 画像ファイルをサーバにアップロード
-        if (!empty($_FILES['image_dir']['name'])) {
-            $image = $this->imgUpload();
+        try {
+            if (!empty($_FILES['image_dir']['name'])) {
+                $image = $this->imgUpload();
+            }
+        } catch (Exception $e) {
+            return $response->withStatus(500)
+                ->withHeader('Content-Type', 'text/html')
+                ->write($e->getMessage());
         }
 
         // 更新前の商品を取得
@@ -143,8 +149,10 @@ class ProductController extends Controller
         $stmt->bindParam(':image_dir', $product['image_dir'], PDO::PARAM_STR);
         $stmt->bindParam(':description', $product['description'], PDO::PARAM_STR);
 
-        $stmt->execute();
-
+        try {
+            $stmt->execute();
+        } catch (Exception $e) {
+        }
         return $response->withRedirect("/product");
     }
 
@@ -187,6 +195,7 @@ class ProductController extends Controller
     /**
      * 画像をサーバに保存
      * @return string 画像ファイル名
+     * @throws Exception
      */
     private function imgUpload(): string
     {
@@ -195,7 +204,13 @@ class ProductController extends Controller
         $file = self::FILE_DIR . $image;
         if (!empty($_FILES['image_dir']['name'])) {
             move_uploaded_file($_FILES['image_dir']['tmp_name'], $file);
-            if (exif_imagetype($file)) return $image;
+            if (exif_imagetype($file)) {
+                // 保存成功
+                return $image;
+            } else {
+                // 保存失敗
+                throw new Exception('not found');
+            }
         }
         return "";
     }
