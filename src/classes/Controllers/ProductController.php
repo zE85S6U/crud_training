@@ -5,7 +5,10 @@ namespace Classes\Controllers;
 
 
 use Exception;
+use http\Exception\RuntimeException;
 use PDO;
+use phpDocumentor\Reflection\Types\Array_;
+use phpDocumentor\Reflection\Types\Boolean;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -57,13 +60,24 @@ class ProductController extends Controller
         $stmt = $this->db->prepare($sql);
 
         // 画像ファイルをサーバにアップロード
-        $image = $this->imgUpload();
+        try {
+            if ($_FILES['image_dir']['error'] != 4) {
+                $image = $this->imgUpload();
+            }
+        } catch (Exception $e) {
+            return $response->withStatus(500)
+                ->withHeader('Content-Type', 'text/html')
+                ->write($e->getMessage());
+        }
+
+        // 画像が選択されなかった場合はダミー画像を表示する
+        $image = $image ?? 'default.jpg';
 
         // プリペアードステートメントを安全に代入
         $stmt->bindParam(':product_name', $product['product_name'], PDO::PARAM_STR);
         $stmt->bindParam(':price', $product['price'], PDO::PARAM_INT);
         $stmt->bindParam(':stock', $product['stock'], PDO::PARAM_INT);
-        $stmt->bindParam(':image_dir', $image, PDO::PARAM_STR);
+        $stmt->bindParam(':image_dir', $image , PDO::PARAM_STR);
         $stmt->bindParam(':description', $product['description'], PDO::PARAM_STR);
 
         $result = $stmt->execute();
@@ -108,6 +122,7 @@ class ProductController extends Controller
      * @param Response $response
      * @param array $args
      * @return Response
+     * @throws Exception
      */
     public function update(Request $request, Response $response, array $args): Response
     {
@@ -121,7 +136,7 @@ class ProductController extends Controller
 
         // 画像ファイルをサーバにアップロード
         try {
-            if (!empty($_FILES['image_dir']['name'])) {
+            if ($_FILES['image_dir']['error'] != 4) {
                 $image = $this->imgUpload();
             }
         } catch (Exception $e) {
@@ -149,10 +164,8 @@ class ProductController extends Controller
         $stmt->bindParam(':image_dir', $product['image_dir'], PDO::PARAM_STR);
         $stmt->bindParam(':description', $product['description'], PDO::PARAM_STR);
 
-        try {
-            $stmt->execute();
-        } catch (Exception $e) {
-        }
+        $stmt->execute();
+
         return $response->withRedirect("/product");
     }
 
@@ -197,21 +210,24 @@ class ProductController extends Controller
      * @return string 画像ファイル名
      * @throws Exception
      */
-    private function imgUpload(): string
+    private function imgUpload()
     {
-        $image = uniqid(mt_rand());
-        $image .= '.' . substr(strrchr($_FILES['image_dir']['name'], '.'), 1);
-        $file = self::FILE_DIR . $image;
-        if (!empty($_FILES['image_dir']['name'])) {
-            move_uploaded_file($_FILES['image_dir']['tmp_name'], $file);
-            if (exif_imagetype($file)) {
-                // 保存成功
-                return $image;
-            } else {
-                // 保存失敗
-                throw new Exception('not found');
-            }
+        // ファイル名は一意性のある名前にする
+        $fileName = uniqid(mt_rand());
+        $fileName .= '.' . substr(strrchr($_FILES['image_dir']['name'], '.'), 1);
+        $filePass = self::FILE_DIR . $fileName;
+
+        // $_FILES['image_dir']['mime']の値はブラウザ側で偽装可能なので、MIMEタイプを自前でチェックする
+        $type = @exif_imagetype($_FILES['image_dir']['tmp_name']);
+        if (!in_array($type, [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG], true)) {
+            throw new Exception('許可されていないファイル形式です');
         }
-        return "";
+
+        // 画像をtempからサーバに保存
+        if (!empty($_FILES['image_dir']['name'])) {
+            move_uploaded_file($_FILES['image_dir']['tmp_name'], $filePass);
+        }
+
+        return $fileName;
     }
 }
