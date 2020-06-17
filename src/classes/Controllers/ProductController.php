@@ -5,11 +5,11 @@ namespace Classes\Controllers;
 
 
 use Exception;
-use http\Exception\RuntimeException;
 use PDO;
-use phpDocumentor\Reflection\Types\Array_;
-use phpDocumentor\Reflection\Types\Boolean;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Slim\Exception\NotFoundException;
+use Slim\Exception\SlimException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -60,32 +60,25 @@ class ProductController extends Controller
         $stmt = $this->db->prepare($sql);
 
         // 画像ファイルをサーバにアップロード
-        try {
-            if ($_FILES['image_dir']['error'] != 4) {
-                $image = $this->imgUpload();
-            }
-        } catch (Exception $e) {
-            return $response->withStatus(500)
-                ->withHeader('Content-Type', 'text/html')
-                ->write($e->getMessage());
+        if ($_FILES['image_dir']['error'] != 4) {
+            $image = $this->imgUpload($request, $response);
+        } else {
+            // 登録画像違反
+            throw new SlimException($request, $response);
         }
 
-        // 画像が選択されなかった場合はダミー画像を表示する
+        // 画像が選択されなかった場合の画像URLはデフォルト値
         $image = $image ?? 'default.jpg';
 
         // プリペアードステートメントを安全に代入
         $stmt->bindParam(':product_name', $product['product_name'], PDO::PARAM_STR);
         $stmt->bindParam(':price', $product['price'], PDO::PARAM_INT);
         $stmt->bindParam(':stock', $product['stock'], PDO::PARAM_INT);
-        $stmt->bindParam(':image_dir', $image , PDO::PARAM_STR);
+        $stmt->bindParam(':image_dir', $image, PDO::PARAM_STR);
         $stmt->bindParam(':description', $product['description'], PDO::PARAM_STR);
 
         $result = $stmt->execute();
-
-        if (!$result) {
-            throw new Exception
-            ('商品登録に失敗しました');
-        }
+        if (!$result) throw new SlimException($request, $response);
 
         // 保存が正常に出来たら一覧ページへリダイレクトする
         return $response->withRedirect("/product");
@@ -97,6 +90,7 @@ class ProductController extends Controller
      * @param Response $response
      * @param array $args
      * @return ResponseInterface
+     * @throws NotFoundException
      */
     public function edit(Request $request, Response $response, array $args): ResponseInterface
     {
@@ -108,9 +102,7 @@ class ProductController extends Controller
         $product = $stmt->fetch();
 
         // 存在しない商品番号にアクセスした場合
-        if (!$product) {
-            return $response->withStatus(404)->write('not found');
-        }
+        if (!$product) throw new NotFoundException($request, $response);
 
         $data = ['product' => $product];
         return $this->renderer->render($response, '/product/edit.phtml', $data);
@@ -126,23 +118,16 @@ class ProductController extends Controller
      */
     public function update(Request $request, Response $response, array $args): Response
     {
-        try {
-            $product = $this->fetchProduct($args['id']);
-        } catch (Exception $e) {
-            return $response->withStatus(404)
-                ->withHeader('Content-Type', 'text/html')
-                ->write($e->getMessage());
-        }
+        $product = $this->fetchProduct($request, $response, $args['id']);
+        // 存在しない商品番号にアクセスした場合
+        if (!$product) throw new NotFoundException($request, $response);
 
         // 画像ファイルをサーバにアップロード
-        try {
-            if ($_FILES['image_dir']['error'] != 4) {
-                $image = $this->imgUpload();
-            }
-        } catch (Exception $e) {
-            return $response->withStatus(500)
-                ->withHeader('Content-Type', 'text/html')
-                ->write($e->getMessage());
+        if ($_FILES['image_dir']['error'] != 4) {
+            $image = $this->imgUpload($request, $response);
+        } else {
+            // 登録画像違反
+            throw new SlimException($request, $response);
         }
 
         // 更新前の商品を取得
@@ -175,42 +160,48 @@ class ProductController extends Controller
      * @param Response $response
      * @param array $args
      * @return Response
+     * @throws Exception
      */
     public function delete(Request $request, Response $response, array $args): Response
     {
-        try {
-            $product = $this->fetchProduct($args['id']);
-        } catch (Exception $e) {
-            return $response->withStatus(404)->write($e->getMessage());
-        }
+        $product = $this->fetchProduct($request, $response, $args['id']);
+        // 存在しない商品番号にアクセスした場合
+        if (!$product) throw new NotFoundException($request, $response);
+
         $stmt = $this->db->prepare('DELETE FROM m_product WHERE product_id = :id');
         $stmt->execute(['id' => $product['product_id']]);
         return $response->withRedirect("/product");
     }
 
     /**
-     * @param $id
+     * 商品をIDで検索
+     * @param Request $request
+     * @param Response $response
+     * @param array $id
      * @return array
-     * @throws Exception
+     * @throws NotFoundException
      */
-    private function fetchProduct($id): array
+    private function fetchProduct(Request $request, Response $response, array $id): array
     {
         $sql = 'SELECT * FROM m_product WHERE product_id = :id';
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id' => $id]);
         $product = $stmt->fetch();
-        if (!$product) {
-            throw new Exception('not found');
-        }
+
+        // 存在しない商品番号にアクセスした場合
+        if (!$product) throw new NotFoundException($request, $response);
+
         return $product;
     }
 
     /**
      * 画像をサーバに保存
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return string 画像ファイル名
-     * @throws Exception
+     * @throws SlimException
      */
-    private function imgUpload()
+    private function imgUpload(ServerRequestInterface $request, ResponseInterface $response)
     {
         // ファイル名は一意性のある名前にする
         $fileName = uniqid(mt_rand());
@@ -220,7 +211,7 @@ class ProductController extends Controller
         // $_FILES['image_dir']['mime']の値はブラウザ側で偽装可能なので、MIMEタイプを自前でチェックする
         $type = @exif_imagetype($_FILES['image_dir']['tmp_name']);
         if (!in_array($type, [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG], true)) {
-            throw new Exception('許可されていないファイル形式です');
+            throw new SlimException($request, $response);
         }
 
         // 画像をtempからサーバに保存

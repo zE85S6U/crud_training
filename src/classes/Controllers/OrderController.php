@@ -7,6 +7,8 @@ namespace Classes\Controllers;
 use Exception;
 use PDO;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Slim\Exception\SlimException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -33,7 +35,7 @@ class OrderController extends Controller
     public function submit(Request $request, Response $response): ResponseInterface
     {
         // 購入商品をデータベースに登録
-        $order_id = $this->insertOrder();
+        $order_id = $this->insertOrder($request,$response);
         $this->insertOrderDetails($order_id);
 
         // カートをリセット
@@ -66,10 +68,12 @@ class OrderController extends Controller
 
     /**
      * 注文したユーザと日付を登録
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return int 登録ID
-     * @throws Exception
+     * @throws SlimException
      */
-    private function insertOrder(): int
+    private function insertOrder(ServerRequestInterface $request, ResponseInterface $response): int
     {
         $sql = 'INSERT INTO d_order(user_id, order_date) '
             . 'VALUES (:user_id, :order_date)';
@@ -88,8 +92,7 @@ class OrderController extends Controller
 
         $result = $stmt->execute();
         if (!$result) {
-            throw new Exception
-            ('注文データ登録に失敗しました');
+            throw new SlimException($request,$response);
         }
 
         return (int)$this->db->lastInsertId();;
@@ -97,15 +100,16 @@ class OrderController extends Controller
 
     /**
      * 注文ごとの詳細を登録
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @param $order_id
-     * @throws Exception
+     * @throws SlimException
      */
-    private function insertOrderDetails($order_id): void
+    private function insertOrderDetails(ServerRequestInterface $request, ResponseInterface $response, $order_id): void
     {
         $sql = 'INSERT INTO d_order_details(order_id, product_id, order_quantity, miner_total) '
             . 'VALUES (:order_id, :product_id, :order_quantity, :miner_total)';
         $stmt = $this->db->prepare($sql);
-
 
         // プリペアードステートメントを安全に代入
         foreach ($_SESSION['cart'] as $item) {
@@ -115,13 +119,12 @@ class OrderController extends Controller
             $stmt->bindParam(':miner_total', $item['miner_total'], PDO::PARAM_INT);
 
             $result = $stmt->execute();
+            if (!$result) {
+                throw new SlimException($request,$response);
+            }
 
             // 在庫を再計算する
             $this->reCalculateStock(['product_id' => $item['product_id'], 'order_quantity' => $item['order_quantity']]);
-            if (!$result) {
-                throw new Exception
-                ('詳細注文データ登録に失敗しました');
-            }
         }
     }
 

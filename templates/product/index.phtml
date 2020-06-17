@@ -14,8 +14,8 @@
         <tr>
             <th>商品番号</th>
             <th scope="col">商品名</th>
-            <th scope="col">価格</th>
-            <th scope="col">在庫</th>
+            <th scope="col" class="text-right">価格</th>
+            <th scope="col" class="text-right">在庫</th>
         </tr>
         </thead>
         <tbody>
@@ -23,8 +23,8 @@
             <tr data-href="/product/<?= $product['product_id'] ?>">
                 <th scope="row"><?= ($product['product_id']) ?></th>
                 <td><?= e($product['product_name']) ?></td>
-                <td><?= $product['price'] ?></td>
-                <td><?= stock_confirmation($product['stock']) ?></td>
+                <td class="text-right"><?= yen($product['price']) ?></td>
+                <td class="text-right"><?= stock_confirmation($product['stock']) ?></td>
             </tr>
         <?php endforeach; ?>
         </tbody>

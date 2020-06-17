@@ -4,9 +4,9 @@
 namespace Classes\Controllers;
 
 
-use Exception;
 use PDO;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -34,6 +34,7 @@ class ShoppingController extends Controller
      * @param Response $response
      * @param array $args
      * @return ResponseInterface
+     * @throws NotFoundException
      */
     public function show(Request $request, Response $response, array $args): ResponseInterface
     {
@@ -45,9 +46,7 @@ class ShoppingController extends Controller
         $product = $stmt->fetch();
 
         // 存在しない商品番号にアクセスした場合
-        if (!$product) {
-            return $response->withStatus(404)->write('not found');
-        }
+        if (!$product) throw new NotFoundException($request, $response);
 
         $data = ['product' => $product];
         return $this->renderer->render($response, '/shopping/item.phtml', $data);

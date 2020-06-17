@@ -31,8 +31,8 @@ class UserController extends Controller
      */
     public function store(Request $request, Response $response): Response
     {
-        $loginid = e($request->getParsedBodyParam('login_id'));
-        $password = password_hash($request->getParsedBodyParam('password'), PASSWORD_DEFAULT);
+        $loginid = e(trim($request->getParsedBodyParam('login_id')));
+        $password = password_hash(trim($request->getParsedBodyParam('password')), PASSWORD_DEFAULT);
 
         $sql = 'INSERT INTO m_user (login_id, password) VALUES (:login_id, :password)';
         $stmt = $this->db->prepare($sql);
@@ -45,7 +45,8 @@ class UserController extends Controller
         } catch (Exception $e) {
             return $response
                 ->withStatus(500)
-                ->withHeader('Content-Type', 'text/html')
+                ->withHeader('
+                Content-Type', 'text/html')
                 ->write('問題が発生しました:エラーコード[' . $e->getCode() . ']');
         }
 
