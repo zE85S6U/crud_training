@@ -5,6 +5,7 @@ namespace Classes\Controllers;
 
 
 use Exception;
+use finfo;
 use PDO;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -60,22 +61,20 @@ class ProductController extends Controller
         $stmt = $this->db->prepare($sql);
 
         // 画像ファイルをサーバにアップロード
-        if ($_FILES['image_dir']['error'] != 4) {
-            $image = $this->imgUpload($request, $response);
-        } else {
-            // 登録画像違反
-            throw new SlimException($request, $response);
-        }
+        $image = $this->imgUpload();
+
 
         // 画像が選択されなかった場合の画像URLはデフォルト値
         $image = $image ?? 'default.jpg';
 
         // プリペアードステートメントを安全に代入
-        $stmt->bindParam(':product_name', $product['product_name'], PDO::PARAM_STR);
+        $product_name = trim($product['product_name']);
+        $description = trim($product['description']);
+        $stmt->bindParam(':product_name', $product_name, PDO::PARAM_STR);
         $stmt->bindParam(':price', $product['price'], PDO::PARAM_INT);
         $stmt->bindParam(':stock', $product['stock'], PDO::PARAM_INT);
         $stmt->bindParam(':image_dir', $image, PDO::PARAM_STR);
-        $stmt->bindParam(':description', $product['description'], PDO::PARAM_STR);
+        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
 
         $result = $stmt->execute();
         if (!$result) throw new SlimException($request, $response);
@@ -123,12 +122,7 @@ class ProductController extends Controller
         if (!$product) throw new NotFoundException($request, $response);
 
         // 画像ファイルをサーバにアップロード
-        if ($_FILES['image_dir']['error'] != 4) {
-            $image = $this->imgUpload($request, $response);
-        } else {
-            // 登録画像違反
-            throw new SlimException($request, $response);
-        }
+        $image = $this->imgUpload();
 
         // 更新前の商品を取得
         $product['product_name'] = $request->getParsedBodyParam('product_name');
@@ -175,13 +169,13 @@ class ProductController extends Controller
 
     /**
      * 商品をIDで検索
-     * @param Request $request
-     * @param Response $response
-     * @param array $id
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param string $id
      * @return array
      * @throws NotFoundException
      */
-    private function fetchProduct(Request $request, Response $response, array $id): array
+    private function fetchProduct(ServerRequestInterface $request, ResponseInterface $response, string $id): array
     {
         $sql = 'SELECT * FROM m_product WHERE product_id = :id';
         $stmt = $this->db->prepare($sql);
@@ -196,27 +190,106 @@ class ProductController extends Controller
 
     /**
      * 画像をサーバに保存
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
      * @return string 画像ファイル名
-     * @throws SlimException
      */
-    private function imgUpload(ServerRequestInterface $request, ResponseInterface $response)
+    private function imgUpload()
     {
-        // ファイル名は一意性のある名前にする
-        $fileName = uniqid(mt_rand());
-        $fileName .= '.' . substr(strrchr($_FILES['image_dir']['name'], '.'), 1);
-        $filePass = self::FILE_DIR . $fileName;
+        // 画像ファイル名
+        $fileName = null;
 
-        // $_FILES['image_dir']['mime']の値はブラウザ側で偽装可能なので、MIMEタイプを自前でチェックする
-        $type = @exif_imagetype($_FILES['image_dir']['tmp_name']);
-        if (!in_array($type, [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG], true)) {
-            throw new SlimException($request, $response);
+        // 画像ファイル未入力か画像設定済で変更しない場合
+        if (($_FILES['image_dir']['error']) == 4) {
+            return null;
         }
 
-        // 画像をtempからサーバに保存
-        if (!empty($_FILES['image_dir']['name'])) {
-            move_uploaded_file($_FILES['image_dir']['tmp_name'], $filePass);
+        // $_FILES['image_dir']['mime']の値はブラウザ側で偽装可能なので、MIMEタイプをチェックする
+        $type = @exif_imagetype($_FILES['image_dir']['tmp_name']);
+
+        // MIMEタイプがgif,jpeg,pngなら保存
+        if (in_array($type, [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG], true)) {
+
+            $tmpName = $_FILES['image_dir']['tmp_name'];
+            $maxWidth = 640;    // 最大幅
+            $maxHeight = 480;   // 最大高さ
+
+            // リサイズ
+            if ($type == IMAGETYPE_GIF) {
+                $ext = '.gif';
+                $srcImage = imagecreatefromgif($tmpName);
+            } elseif ($type == IMAGETYPE_JPEG) {
+                $ext = '.jpeg';
+                $srcImage = imagecreatefromjpeg($tmpName);
+            } elseif ($type == IMAGETYPE_PNG) {
+                $ext = '.png';
+                $srcImage = imagecreatefrompng($tmpName);
+            } else {
+                return false;
+            }
+
+
+            list($srcWidth, $srcHeight) = getimagesize($tmpName);
+
+            // 元画像の縦横の大きさを比べてどちらかにあわせる
+            if ($srcWidth > $srcHeight) {
+                $diff = $srcHeight / $maxHeight;
+                $newWidth = $maxWidth * $diff;
+                $newHeight = $srcHeight;
+                $cutOff = $srcWidth - $newWidth;
+                $offSetY = 0;
+                $offSetX = $cutOff * 0.5;
+            } elseif ($srcWidth < $srcHeight) {
+                $diff = $srcWidth / $maxWidth;
+                $newWidth = $srcWidth;
+                $newHeight = $maxHeight * $diff;
+                $cutOff = $srcHeight - $newHeight;
+                $offSetY = $cutOff * 0.5;
+                $offSetX = 0;
+            } elseif ($srcWidth === $srcHeight) {
+                $diff = $srcHeight / $maxHeight;
+                $newWidth = $maxWidth * $diff;
+                $newHeight = $srcHeight;
+                $cutOff = $srcWidth - $newWidth;
+                $offSetY = 0;
+                $offSetX = $cutOff * 0.5;
+            }
+
+            //サムネイルになる土台の画像
+            $canvas = imagecreatetruecolor($maxWidth, $maxHeight);
+
+            if ($ext == '.gif') {
+                $transparent1 = imagecolortransparent($srcImage);
+                if ($transparent1 >= 0) {
+                    $index = imagecolorsforindex($srcImage, $transparent1);
+                    $transparent2 = imagecolorallocate($canvas, $index['red'], $index['green'], $index['blue']);
+                    imagefill($canvas, 0, 0, $transparent2);
+                    imagecolortransparent($canvas, $transparent2);
+                }
+            } elseif ($ext == '.png') {
+                imagealphablending($canvas, false);
+                $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+                imagefill($canvas, 0, 0, $transparent);
+                imagesavealpha($canvas, true);
+            }
+
+            imagecopyresampled($canvas, $srcImage, 0, 0, $offSetX, $offSetY, $maxWidth, $maxHeight, $newWidth, $newHeight);
+
+
+            $fileName = uniqid(mt_rand());
+            $fileName .= '.' . substr(strrchr($_FILES['image_dir']['name'], '.'), 1);
+            $filePass = self::FILE_DIR . $fileName;
+
+            if ($ext == '.jpg' || $ext == '.jpeg') {
+                $quality = 80;
+                imagejpeg($canvas, $filePass, $quality);
+            } else if ($ext == '.png') {
+                imagepng($canvas, $filePass);
+            } else if ($ext == '.gif') {
+                imagegif($canvas, $filePass);
+            }
+
+            imagedestroy($srcImage);
+            imagedestroy($canvas);
+
         }
 
         return $fileName;

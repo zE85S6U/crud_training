@@ -29,9 +29,4 @@ return function (App $app) {
         $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         return $pdo;
     };
-
-    // ERROR
-    $container['errorHandler'] = function ($c) {
-        return new \Classes\Handlers\Error($c->get('settings')['displayErrorDetails']);
-    };
 };

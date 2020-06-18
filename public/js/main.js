@@ -12,7 +12,8 @@ const preview = document.querySelector('.preview');
 const btn = document.getElementsByClassName('imageSubmit');
 
 const maxSize = 2097152;    // ファイルサイズ上限
-input.addEventListener('change', updateImageDisplay);
+
+if (input) input.addEventListener('change', updateImageDisplay);
 
 //
 function updateImageDisplay() {
