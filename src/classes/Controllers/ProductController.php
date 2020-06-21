@@ -245,12 +245,12 @@ class ProductController extends Controller
                 $offSetY = $cutOff * 0.5;
                 $offSetX = 0;
             } elseif ($srcWidth === $srcHeight) {
-                $diff = $srcHeight / $maxHeight;
-                $newWidth = $maxWidth * $diff;
-                $newHeight = $srcHeight;
-                $cutOff = $srcWidth - $newWidth;
-                $offSetY = 0;
-                $offSetX = $cutOff * 0.5;
+                $diff = $srcWidth / $maxWidth;
+                $newWidth = $srcWidth;
+                $newHeight = $maxHeight * $diff;
+                $cutOff = $srcHeight - $newHeight;
+                $offSetY = $cutOff * 0.5;
+                $offSetX = 0;
             }
 
             //サムネイルになる土台の画像
