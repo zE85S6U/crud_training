@@ -12,13 +12,22 @@
         <form class="needs-validation" action="/product/<?= $product['product_id'] ?>" method="post"
               enctype="multipart/form-data">
             <div class="row">
-                <div class="col-md-12 mb-3">
+                <div class="col-md-6 mb-3">
                     <label for="productName">商品名</label>
                     <input type="text" class="form-control" name="product_name" id="productName" placeholder=""
                            value="<?= $product['product_name'] ?>"
                            required>
                     <div class="invalid-feedback">
                         商品名を入力してください
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="productName">愛称(20文字以内)</label>
+                    <input type="text" class="form-control" name="nickname" id="nickname" placeholder=""
+                           value="<?= $product['nickname'] ?>"
+                           required>
+                    <div class="invalid-feedback">
+                        愛称を入力してください(20文字以内)
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
@@ -47,7 +56,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12 mb-3">
-                    <label for="productImage">商品画像(2MBまで 比率は4:3ぐらいが好ましい)</label>
+                    <label for="productImage">商品画像(2MBまで)</label>
                     <input type="file" class="form-control-file" name="image_dir" id="productImage"
                            accept=".jpg,.gif,.png,image/gif,image/jpeg,image/png" required">
                     <div class="preview">

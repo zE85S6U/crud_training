@@ -23,7 +23,15 @@ class ShoppingController extends Controller
         $sql = 'SELECT * FROM m_product ORDER BY product_id';
         $stmt = $this->db->query($sql);
         $products = $stmt->fetchAll();
-        $data = ['products' => $products];
+
+        $stmt = null;
+        $sql = 'SELECT product_name, nickname, CAST(m_product.create_at as date) as Now 
+                    FROM m_product ORDER BY create_at DESC LIMIT 5';
+        $stmt = $this->db->query($sql);
+        $news = $stmt->fetchAll();
+        $data = ['products' => $products
+            , 'news' => $news
+        ];
 
         return $this->renderer->render($response, '/shopping/index.phtml', $data);
     }

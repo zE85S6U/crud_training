@@ -5,21 +5,13 @@
 <div class="container">
     <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto">
         <h1 class="display-5">News</h1>
-        <dl>
-            <dt>2020-6-18</dt>
-            <dd>食いしん坊なコアラが仲間入りしました</dd>
-        </dl>
-        <hr>
-        <dl>
-            <dt>2020-5-15</dt>
-            <dd>器用なラッコが仲間入りしました</dd>
-        </dl>
-        <hr>
-        <dl>
-            <dt>2020-4-17</dt>
-            <dd>フカフカのアルパカが仲間入りしました</dd>
-        </dl>
-        <hr>
+        <?php foreach ($news as $headline): ?>
+            <dl>
+                <dt><?= $headline['now'] ?></phpv></dt>
+                <dd><?= $headline['nickname'] . 'な' . $headline['product_name'] ?>が動物が仲間入りしました。</dd>
+            </dl>
+            <hr>
+        <?php endforeach; ?>
     </div>
 </div>
 <!--商品-->

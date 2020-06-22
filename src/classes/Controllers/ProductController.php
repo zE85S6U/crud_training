@@ -56,8 +56,8 @@ class ProductController extends Controller
     {
         // postされたデータを変数に代入
         $product = $request->getParsedBody();
-        $sql = 'INSERT INTO m_product (product_name, price, stock, image_dir, description) '
-            . 'VALUES (:product_name, :price, :stock, :image_dir, :description)';
+        $sql = 'INSERT INTO m_product (product_name, price, stock, image_dir, description, nickname) '
+            . 'VALUES (:product_name, :price, :stock, :image_dir, :description, :nickname)';
         $stmt = $this->db->prepare($sql);
 
         // 画像ファイルをサーバにアップロード
@@ -70,11 +70,13 @@ class ProductController extends Controller
         // プリペアードステートメントを安全に代入
         $product_name = trim($product['product_name']);
         $description = trim($product['description']);
+        $nickname = trim($product['nickname']);
         $stmt->bindParam(':product_name', $product_name, PDO::PARAM_STR);
         $stmt->bindParam(':price', $product['price'], PDO::PARAM_INT);
         $stmt->bindParam(':stock', $product['stock'], PDO::PARAM_INT);
         $stmt->bindParam(':image_dir', $image, PDO::PARAM_STR);
         $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+        $stmt->bindParam(':nickname', $nickname, PDO::PARAM_STR);
 
         $result = $stmt->execute();
         if (!$result) throw new SlimException($request, $response);
@@ -130,9 +132,10 @@ class ProductController extends Controller
         $product['stock'] = $request->getParsedBodyParam('stock');
         $product['image_dir'] = $image ?? $product['image_dir'];
         $product['description'] = $request->getParsedBodyParam('description');
+        $product['nickname'] = $request->getParsedBodyParam('nickname');
 
-        $stmt = $this->db->prepare('UPDATE m_product SET product_name = :product_name, 
-                     price = :price, stock = :stock, image_dir = :image_dir, description = :description
+        $stmt = $this->db->prepare('UPDATE m_product SET product_name = :product_name, price = :price,
+                     stock = :stock, image_dir = :image_dir, description = :description, nickname = :nickname
                      WHERE product_id = :product_id');
 
         // プリペアードステートメントを安全に代入
@@ -142,6 +145,7 @@ class ProductController extends Controller
         $stmt->bindParam(':stock', $product['stock'], PDO::PARAM_INT);
         $stmt->bindParam(':image_dir', $product['image_dir'], PDO::PARAM_STR);
         $stmt->bindParam(':description', $product['description'], PDO::PARAM_STR);
+        $stmt->bindParam(':nickname', $product['nickname'], PDO::PARAM_STR);
 
         $stmt->execute();
 
