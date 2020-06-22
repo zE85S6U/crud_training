@@ -45,9 +45,8 @@ class UserController extends Controller
         } catch (Exception $e) {
             return $response
                 ->withStatus(500)
-                ->withHeader('
-                Content-Type', 'text/html')
-                ->write('問題が発生しました:エラーコード[' . $e->getCode() . ']');
+                ->withHeader('Content-Type', 'text/html')
+                ->write('問題が発生しました:別の名前を使用してください');
         }
 
         // 保存が正常に出来たらTOPページへリダイレクトする
