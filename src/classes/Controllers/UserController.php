@@ -33,6 +33,7 @@ class UserController extends Controller
     {
         $loginid = e(trim($request->getParsedBodyParam('login_id')));
 
+        // パスワードの検証
         $password = trim($request->getParsedBodyParam('password'));
         if ($this->verifyPassword($password)) {
             $password = password_hash($password, PASSWORD_DEFAULT);
@@ -42,6 +43,8 @@ class UserController extends Controller
                 ->withHeader('Content-Type', 'text/html')
                 ->write(' パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。');
         }
+
+        // SQLを組み立て
         $sql = 'INSERT INTO m_user (login_id, password) VALUES (:login_id, :password)';
         $stmt = $this->db->prepare($sql);
 
