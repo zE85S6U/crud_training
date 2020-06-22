@@ -32,8 +32,16 @@ class UserController extends Controller
     public function store(Request $request, Response $response): Response
     {
         $loginid = e(trim($request->getParsedBodyParam('login_id')));
-        $password = password_hash(trim($request->getParsedBodyParam('password')), PASSWORD_DEFAULT);
 
+        $password = trim($request->getParsedBodyParam('password'));
+        if ($this->verifyPassword($password)) {
+            $password = password_hash($password, PASSWORD_DEFAULT);
+        } else {
+            return $response
+                ->withStatus(500)
+                ->withHeader('Content-Type', 'text/html')
+                ->write(' パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。');
+        }
         $sql = 'INSERT INTO m_user (login_id, password) VALUES (:login_id, :password)';
         $stmt = $this->db->prepare($sql);
 
@@ -73,7 +81,7 @@ class UserController extends Controller
     public function login(Request $request, Response $response): Response
     {
         $loginid = e($request->getParsedBodyParam('login_id'));
-        $password = $request->getParsedBodyParam('password');
+        $password = e($request->getParsedBodyParam('password'));
 
         $sql = 'SELECT * FROM m_user WHERE login_id = :login_id';
         $stmt = $this->db->prepare($sql);
@@ -108,5 +116,23 @@ class UserController extends Controller
     {
         unset($_SESSION['user']);
         return $response->withRedirect("/");
+    }
+
+    /**
+     * 登録されるパスワードの安全性を検証する
+     * @param $password
+     * @return bool
+     * https://qiita.com/mpyw/items/886218e7b418dfed254b
+     */
+    private function verifyPassword($password): bool
+    {
+        $result = null;
+        // 半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下
+        if (preg_match('/\A(?=.*?[a-z])(?=.*?\d)(?=.*?[!-\/:-@[-`{-~])[!-~]{8,100}+\z/i', $password)) {
+            $result = true;
+        } else {
+            $result = false;
+        }
+        return $result;
     }
 }
