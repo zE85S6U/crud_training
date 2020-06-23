@@ -5,7 +5,6 @@ namespace Classes\Controllers;
 
 
 use Exception;
-use finfo;
 use PDO;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -127,16 +126,18 @@ class ProductController extends Controller
         $image = $this->imgUpload();
 
         // 更新前の商品を取得
-        $product['product_name'] = $request->getParsedBodyParam('product_name');
+        $product['product_name'] = trim($request->getParsedBodyParam('product_name'));
         $product['price'] = $request->getParsedBodyParam('price');
         $product['stock'] = $request->getParsedBodyParam('stock');
         $product['image_dir'] = $image ?? $product['image_dir'];
-        $product['description'] = $request->getParsedBodyParam('description');
-        $product['nickname'] = $request->getParsedBodyParam('nickname');
+        $product['description'] = trim($request->getParsedBodyParam('description'));
+        $product['nickname'] = trim($request->getParsedBodyParam('nickname'));
 
-        $stmt = $this->db->prepare('UPDATE m_product SET product_name = :product_name, price = :price,
+        $sql = 'UPDATE m_product SET product_name = :product_name, price = :price,
                      stock = :stock, image_dir = :image_dir, description = :description, nickname = :nickname
-                     WHERE product_id = :product_id');
+                     WHERE product_id = :product_id';
+
+        $stmt = $this->db->prepare($sql);
 
         // プリペアードステートメントを安全に代入
         $stmt->bindParam(':product_id', $product['product_id'], PDO::PARAM_INT);

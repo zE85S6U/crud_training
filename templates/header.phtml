@@ -78,15 +78,19 @@
                             </svg>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="/login">ログイン</a>
-                            <a class="dropdown-item" href="/logout">ログアウト</a>
-                            <a class="dropdown-item" href="/signup">新規登録</a>
+                            <?php if (isset($_SESSION['user']['login_id'])) : ?>
+                                <a class="dropdown-item" href="/user/profile">利用者情報</a>
+                                <?php if (isset($_SESSION['user']) && $_SESSION['user']['auth']) : ?>
+                                    <a class="dropdown-item" href="/product">商品管理画面</a>
+                                <?php endif ?>
+                                <a class="dropdown-item" href="/logout">ログアウト</a>
+                            <?php else: ?>
+                                <a class="dropdown-item" href="/login">ログイン</a>
+                                <a class="dropdown-item" href="/signup">新規登録</a>
+                            <?php endif; ?>
                         </div>
                     </li>
                 </ul>
             </div>
-            <?php if (isset($_SESSION['user']) && $_SESSION['user']['auth']) : ?>
-                <a href="/product">商品管理画面</a>
-            <?php endif ?>
         </nav>
     </header>

@@ -33,6 +33,20 @@ return function (App $app) {
     // ログアウト
     $app->get('/logout', UserController::class . ':logout');
 
+    // 登録者情報
+    $app->get('/user/profile', UserController::class . ':profile');
+
+    // 登録者情報更新
+    $app->post('/user', UserController::class . ':update');
+
+
+
+
+
+
+    // 登録者情報削除
+    $app->delete('/user', UserController::class . ':delete');
+
     // カートを表示する
     $app->get('/cart', CartController::class . ':index');
 

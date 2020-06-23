@@ -36,7 +36,7 @@ class OrderController extends Controller
     {
         // 購入商品をデータベースに登録
         $order_id = $this->insertOrder($request,$response);
-        $this->insertOrderDetails($order_id);
+        $this->insertOrderDetails($request, $response, $order_id);
 
         // カートをリセット
         $this->resetSession();

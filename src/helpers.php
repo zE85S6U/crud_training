@@ -42,3 +42,16 @@ if (!function_exists('isAdmin')) {
         }
     }
 }
+
+// ログイン済のユーザのみアクセスできるページの制限
+
+if (!function_exists('isLogin')) {
+    function isLogin()
+    {
+        if (!isset($_SESSION['user'])) {
+            header('Location: /');
+            //以下の処理を行わない
+            exit();
+        }
+    }
+}
