@@ -15,7 +15,7 @@ const maxSize = 2097152;    // ファイルサイズ上限
 
 if (input) input.addEventListener('change', updateImageDisplay);
 
-//
+//　アップロードされた画像のサムネイル
 function updateImageDisplay() {
     while (preview.firstChild) {
         preview.removeChild(preview.firstChild);

@@ -269,7 +269,7 @@ class ProductController extends Controller
             //サムネイルになる土台の画像
             $canvas = imagecreatetruecolor($maxWidth, $maxHeight);
 
-            // 背景署の設定
+            // 背景色の設定
             if ($ext == '.gif') {
                 $transparent1 = imagecolortransparent($srcImage);
                 if ($transparent1 >= 0) {
