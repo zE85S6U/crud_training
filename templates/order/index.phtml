@@ -8,14 +8,14 @@
         <div class="col-sm-12 mb-4">
             <?php foreach ($_SESSION['cart'] as $index => $item) : ?>
                 <div class="row">
-                    <ul class="list-group">
+                    <ul class="list-group flex-fill">
                         <li class="list-group-item justify-content-between d-lg-flex align-items-center mb-3">
-                            <img class="col-lg-2 col-md-12 img-fluid" src="<?= $item['image_dir'] ?>"
+                            <img class="col-lg-2 img-fluid" src="<?= $item['image_dir'] ?>"
                                  alt="商品画像">
-                            <span class="col-lg-3 col-md-6">商品名: <?= $item['product_name'] ?></span>
-                            <span class="col-lg-2 col-md-6">価格 : <?= yen($item['price']) ?></span>
-                            <span class="col-lg-3 col-md-12">数量 :<?= $item['order_quantity'] ?></span>
-                            <span class="col-lg-3 col-md-12">小計 :<?= yen($item['miner_total']) ?></span>
+                            <span class="col-lg-3">商品名: <?= $item['product_name'] ?></span>
+                            <span class="col-lg-2">価格 : <?= yen($item['price']) ?></span>
+                            <span class="col-lg-3">数量 :<?= $item['order_quantity'] ?></span>
+                            <span class="col-lg-3">小計 :<?= yen($item['miner_total']) ?></span>
                         </li>
                     </ul>
                 </div>

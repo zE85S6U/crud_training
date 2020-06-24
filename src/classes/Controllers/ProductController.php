@@ -193,9 +193,10 @@ class ProductController extends Controller
         return $product;
     }
 
+
     /**
      * 画像をサーバに保存
-     * @return string 画像ファイル名
+     * @return bool|string|null 画像ファイル名
      */
     private function imgUpload()
     {
@@ -213,11 +214,15 @@ class ProductController extends Controller
         // MIMEタイプがgif,jpeg,pngなら保存
         if (in_array($type, [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG], true)) {
 
+            // アップロードされtがファイルの名前
             $tmpName = $_FILES['image_dir']['tmp_name'];
-            $maxWidth = 640;    // 最大幅
-            $maxHeight = 480;   // 最大高さ
 
-            // リサイズ
+            // 最大幅
+            $maxWidth = 640;
+            // 最大高
+            $maxHeight = 480;
+
+            // 元画像リソースを作成
             if ($type == IMAGETYPE_GIF) {
                 $ext = '.gif';
                 $srcImage = imagecreatefromgif($tmpName);
@@ -231,18 +236,20 @@ class ProductController extends Controller
                 return false;
             }
 
-
+            // 元画像の高さと幅を取得
             list($srcWidth, $srcHeight) = getimagesize($tmpName);
 
-            // 元画像の縦横の大きさを比べてどちらかにあわせる
+            // 4:3の比率でとれる最大サイズを取得
             if ($srcWidth > $srcHeight) {
-                $diff = $srcHeight / $maxHeight;
-                $newWidth = $maxWidth * $diff;
-                $newHeight = $srcHeight;
-                $cutOff = $srcWidth - $newWidth;
-                $offSetY = 0;
-                $offSetX = $cutOff * 0.5;
+                // 幅のほうが大きい場合
+                $diff = $srcHeight / $maxHeight;    // 幅と高さの比率差
+                $newWidth = $maxWidth * $diff;      // 変換元となる画像の幅
+                $newHeight = $srcHeight;            // 変換元なる画像の高さ
+                $cutOff = $srcWidth - $newWidth;    // 切り取る長さ
+                $offSetY = 0;                       // キャプチャするY起点
+                $offSetX = $cutOff * 0.5;           // キャプチャするX起点
             } elseif ($srcWidth < $srcHeight) {
+                // 高さのほうが大きい場合
                 $diff = $srcWidth / $maxWidth;
                 $newWidth = $srcWidth;
                 $newHeight = $maxHeight * $diff;
@@ -250,6 +257,7 @@ class ProductController extends Controller
                 $offSetY = $cutOff * 0.5;
                 $offSetX = 0;
             } elseif ($srcWidth === $srcHeight) {
+                // 横縦が同じ場合は高さが大きい場合のルールを使用
                 $diff = $srcWidth / $maxWidth;
                 $newWidth = $srcWidth;
                 $newHeight = $maxHeight * $diff;
@@ -261,6 +269,7 @@ class ProductController extends Controller
             //サムネイルになる土台の画像
             $canvas = imagecreatetruecolor($maxWidth, $maxHeight);
 
+            // 背景署の設定
             if ($ext == '.gif') {
                 $transparent1 = imagecolortransparent($srcImage);
                 if ($transparent1 >= 0) {
@@ -276,13 +285,15 @@ class ProductController extends Controller
                 imagesavealpha($canvas, true);
             }
 
+            // リサイズの実行
             imagecopyresampled($canvas, $srcImage, 0, 0, $offSetX, $offSetY, $maxWidth, $maxHeight, $newWidth, $newHeight);
 
-
+            // ファイルネームは一意な値にする
             $fileName = uniqid(mt_rand());
             $fileName .= '.' . substr(strrchr($_FILES['image_dir']['name'], '.'), 1);
             $filePass = self::FILE_DIR . $fileName;
 
+            // ファイルに出力する
             if ($ext == '.jpg' || $ext == '.jpeg') {
                 $quality = 80;
                 imagejpeg($canvas, $filePass, $quality);
@@ -292,9 +303,9 @@ class ProductController extends Controller
                 imagegif($canvas, $filePass);
             }
 
+            // 画像を破棄する
             imagedestroy($srcImage);
             imagedestroy($canvas);
-
         }
 
         return $fileName;

@@ -148,7 +148,7 @@ class UserController extends Controller
                 FROM d_order d
                     INNER JOIN d_order_details dd on d.order_id = dd.order_id
                     INNER JOIN m_product mp on dd.product_id = mp.product_id
-                WHERE user_id = :user_id';
+                WHERE user_id = :user_id ORDER BY order_date DESC';
         $stmt = $this->db->prepare($sql);
 
 

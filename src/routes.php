@@ -39,11 +39,6 @@ return function (App $app) {
     // 登録者情報更新
     $app->post('/user', UserController::class . ':update');
 
-
-
-
-
-
     // 登録者情報削除
     $app->delete('/user', UserController::class . ':delete');
 

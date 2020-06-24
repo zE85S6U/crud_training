@@ -17,12 +17,12 @@
             <!-- 商品 -->
             <?php foreach ($_SESSION['cart'] as $index => $item) : ?>
                 <div class="row">
-                    <ul class="list-group">
+                    <ul class="list-group flex-fill">
                         <li class="list-group-item justify-content-between d-lg-flex align-items-center mb-3">
-                            <img class="col-lg-2 col-md-12 img-fluid" src="<?= $item['image_dir'] ?>" alt="商品画像">
-                            <span class="col-lg-3 col-md-6"><?= $item['product_name'] ?></span>
-                            <span class="col-lg-2 col-md-6"><?= yen($item['price']) ?></span>
-                            <form class="col-lg-3 col-md-12" action="/cart/update" method="post">
+                            <img class="col-lg-2 img-fluid" src="<?= $item['image_dir'] ?>" alt="商品画像">
+                            <span class="col-lg-3"><?= $item['product_name'] ?></span>
+                            <span class="col-lg-2"><?= yen($item['price']) ?></span>
+                            <form class="col-lg-3" action="/cart/update" method="post">
                                 <select name="order_quantity">
                                     <?php
                                     for ($i = 1; $i <= $item['stock']; $i++) {
@@ -38,7 +38,7 @@
                                 <button class="btn btn-outline-success btn-sm">更新</button>
                                 <a class="btn btn-outline-danger btn-sm" role="button" href=/cart/<?= $index ?>>削除</a>
                             </form>
-                            <span class="col-lg-3 col-md-12">小計 :<?= yen($item['miner_total']) ?></span>
+                            <span class="col-lg-3">小計 :<?= yen($item['miner_total']) ?></span>
                         </li>
                     </ul>
                 </div>

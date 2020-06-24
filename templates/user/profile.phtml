@@ -9,22 +9,20 @@
     <!-- ユーザプロファイル -->
     <div class="border border-secondary rounded  m-1">
         <!-- タブ部分 -->
-        <ul id="myTab" class="nav nav-tabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <a href="#profile" id="profile-tab" class="nav-link" role="tab" data-toggle="tab"
-                   aria-controls="profile" aria-selected="false">利用者情報</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a href="#history" id="history-tab" class="nav-link" role="tab" data-toggle="tab"
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                   aria-controls="profile" aria-selected="true">利用者情報</a>
+                <a class="nav-item nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab"
                    aria-controls="history" aria-selected="false">購入履歴</a>
-            </li>
-        </ul>
+            </div>
+        </nav>
 
         <!-- パネル部分 -->
-        <div id="myTabContent" class="tab-content mt-3">
+        <div class="tab-content mt-3" id="nav-tabContent">
             <!-- ユーザ情報 -->
-            <div id="profile" class="tab-pane" role="tabpanel" aria-labelledby="profile-tab">
-                <div class="col-md-12 order-md-1">
+            <div class="tab-pane active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="col-md-12">
                     <form class="needs-validation" action="/user" method="post"
                           enctype="multipart/form-data">
                         <div class="row">
@@ -59,38 +57,37 @@
             </div>
 
             <!-- 購入履歴 -->
-            <div id="history" class="tab-pane" role="tabpanel" aria-labelledby="history-tab">
-                <div class="col-sm-12">
+            <div class="tab-pane" id="history" role="tabpanel" aria-labelledby="history-tab">
+                <div class="col-md-12">
                     <?php if (!empty($data['history'])) : ?>
-                    <!-- 商品 -->
-                    <?php $buy_day = null; ?>
-                    <?php foreach ($data['history'] as $item) : ?>
-                        <?php
-                        if ($item['order_date'] != $buy_day) {
-                            echo "<hr>";
-                        }
-                        ?>
-                        <div class="row">
-                            <ul class="" style="width: 100%">
-                                <li class="justify-content-end d-lg-flex align-items-center">
-                                    <?php if ($item['order_date'] != $buy_day)  : ?>
-                                        <hr>
-                                        <span class="col-lg-3 col-md-6">購入日<?= $item['order_date'] ?></span>
-                                    <?php endif; ?>
-                                    <span class="col-lg-3 col-md-6"><?= $item['product_name'] ?></span>
-                                    <span class="col-lg-2 col-md-6">小計<?= yen($item['price']) ?>円</span>
-                                    <span class="col-lg-2 col-md-6"><?= $item['order_quantity'] ?>個</span>
-                                    <img class="col-lg-2 col-md-12 img-fluid"
-                                         src="<?= '/image/file/' . $item['image_dir'] ?>"
-                                         alt="商品画像">
-                                </li>
-                            </ul>
-                        </div>
-                        <?php $buy_day = $item['order_date']; ?>
-                    <?php endforeach; ?>
+                        <!-- 商品 -->
+                        <?php $buy_day = null; ?>
+                        <?php foreach ($data['history'] as $item) : ?>
+                            <div class="row">
+                                <ul class="flex-fill">
+                                    <?php
+                                    if ($item['order_date'] != $buy_day && $buy_day != null) {
+                                        echo "<hr>";
+                                    }
+                                    ?>
+                                    <li class="d-sm-flex  justify-content-end align-items-center">
+                                        <?php if ($item['order_date'] != $buy_day)  : ?>
+                                            <p class="col-sm-2">購入日<?= $item['order_date'] ?></p>
+                                        <?php endif; ?>
+                                        <p class="col-sm-3"><?= $item['product_name'] ?></p>
+                                        <p class="col-sm-3"><?= yen($item['price']) ?>円</p>
+                                        <p class="col-sm-2 "><?= $item['order_quantity'] ?>個</p>
+                                        <img class="col-sm-2 img-fluid"
+                                             src="<?= '/image/file/' . $item['image_dir'] ?>"
+                                             alt="商品画像">
+                                    </li>
+                                </ul>
+                            </div>
+                            <?php $buy_day = $item['order_date']; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
-            <?php endif; ?>
         </div>
     </div>
 </div>

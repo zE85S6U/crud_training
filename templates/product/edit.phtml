@@ -32,7 +32,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="productPrice">価格</label>
-                    <input type="number" min="0" class="form-control" name="price" id="productPrice" placeholder=""
+                    <input type="number" min="0" max="100000000" class="form-control" name="price" id="productPrice" placeholder=""
                            value="<?= $product['price'] ?>"
                            required>
                     <div class="invalid-feedback">
@@ -41,7 +41,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="productStock">在庫</label>
-                    <input type="number" min="0" class="form-control" name="stock" id="productStock" placeholder=""
+                    <input type="number" min="0" max="100" class="form-control" name="stock" id="productStock" placeholder=""
                            value="<?= $product['stock'] ?>"
                            required>
                     <div class="invalid-feedback">
