@@ -7,10 +7,14 @@
         <label for="inputName" class="sr-only">ログイン名</label>
         <input type="text" name="login_id" id="inputName" class="form-control" placeholder="ログイン名" pattern=".*\S+.*"
                required autofocus>
-<!--       <p class="text-danger">エラー</p>-->
+        <?php if (isset($data['login_id_error'])): ?>
+            <span class="text-danger d-block small"><?= $data['login_id_error']; ?></span>
+        <?php endif; ?>
         <label for="inputPassword" class="sr-only">パスワード</label>
         <input type="password" name="password" id="inputPassword" class="form-control" placeholder="パスワード" required>
-<!--        <p class="text-danger">エラー</p>-->
+        <?php if (isset($data['password_error'])): ?>
+            <span class="text-danger d-block small"><?= $data['password_error']; ?></span>
+        <?php endif; ?>
         <small class="text-muted">※パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下</small>
         <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" value="remember-me" id="rememberCheck">

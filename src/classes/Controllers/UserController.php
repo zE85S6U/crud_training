@@ -28,9 +28,9 @@ class UserController extends Controller
      * ユーザを登録
      * @param Request $request
      * @param Response $response
-     * @return Response
+     * @return ResponseInterface
      */
-    public function store(Request $request, Response $response): Response
+    public function store(Request $request, Response $response): ResponseInterface
     {
         $loginid = e(trim($request->getParsedBodyParam('login_id')));
 
@@ -39,10 +39,10 @@ class UserController extends Controller
         if ($this->verifyPassword($password)) {
             $password = password_hash($password, PASSWORD_DEFAULT);
         } else {
-            return $response
-                ->withStatus(500)
-                ->withHeader('Content-Type', 'text/html')
-                ->write(' パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。');
+            $data = [
+                'password_error' =>  'パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。'
+            ];
+            return $this->renderer->render($response, '/user/signup.phtml', $data);
         }
 
         // SQLを組み立て
@@ -55,10 +55,10 @@ class UserController extends Controller
             $stmt->bindParam(':password', $password, PDO::PARAM_STR);
             $stmt->execute();
         } catch (Exception $e) {
-            return $response
-                ->withStatus(500)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('問題が発生しました:別の名前を使用してください');
+            $data = [
+                'login_id_error' =>  '問題が発生しました:別の名前を使用してください。'
+            ];
+            return $this->renderer->render($response, '/user/signup.phtml',  $data);
         }
 
         // 保存が正常に出来たらTOPページへリダイレクトする
@@ -80,9 +80,9 @@ class UserController extends Controller
      * ログイン
      * @param Request $request
      * @param Response $response
-     * @return Response
+     * @return ResponseInterface
      */
-    public function login(Request $request, Response $response): Response
+    public function login(Request $request, Response $response): ResponseInterface
     {
         $loginid = e($request->getParsedBodyParam('login_id'));
         $password = e($request->getParsedBodyParam('password'));
@@ -94,10 +94,10 @@ class UserController extends Controller
         $user = $stmt->fetch();
 
         if (!$user) {
-            return $response
-                ->withStatus(403)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('ログインできません　ログイン情報をお確かめ下さい。');
+            $data = [
+                'auth_error' =>  'ログインできません　ログイン情報をお確かめ下さい。'
+            ];
+            return $this->renderer->render($response, '/user/login.phtml', $data);
         }
 
         if ($user && password_verify($password, $user['password'])) {
