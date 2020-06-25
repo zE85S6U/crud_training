@@ -2,12 +2,12 @@
 <?= $this->fetch('header.phtml') ?>
 
 <div class="container">
-    <div class="row justify-content-center border border-secondary rounded  m-1">
-        <a class="p-4 h5" href="/">買い物を続ける</a>
+    <div class="row justify-content-center text-center border border-secondary rounded  m-1">
+        <a class="h5 p-4 mt-2" href="/">買い物を続ける</a>
     </div>
     <!-- カート内商品一覧 -->
     <div class="border border-secondary rounded  m-1">
-        <div class="col-sm-12 mb-4">
+        <div class="col-sm-12">
             <?php if (!empty($_SESSION['cart'])) : ?>
             <!-- カート内の商品数 -->
             <h4 class="d-flex justify-content-end align-items-center m-2">
@@ -51,7 +51,7 @@
     </div>
 
     <?php else : ?>
-        <p class="p-4 h5 text-center">ショッピングカートに商品は入っていません。</p>
+        <p class="h5 p-4 mt-2 text-center">ショッピングカートに商品は入っていません。</p>
     <?php endif; ?>
 </div>
 

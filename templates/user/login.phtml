@@ -2,7 +2,18 @@
 <?= $this->fetch('header.phtml') ?>
 
 <div class="container">
+    <div class="info-box mx-auto">
+        <p class="h5 text-danger">※ログインに関するお知らせ　2020/06/25 13:37</p>
+        <p class="text-danger">
+            パスワードポリシー変更に伴い2020/06/22以前に登録された方にパスワード変更の依頼をしております。
+            20202/08/01までに変更されていない方は、ロックアウトされ、システムにログインできなくなります。<br>
+            ログイン後、以下のURLからパスワードの変更をお願いいたします。<br>
+
+            http://192.168.1.59/user/profile
+        </p>
+    </div>
     <form action="/login" method="post" class="form-signin">
+        <p class="text-danger"></p>
         <h1 class="h3 mb-3 font-weight-normal">ログイン</h1>
         <label for="inputName" class="sr-only">ログイン名</label>
         <input type="text" name="login_id" id="inputName" class="form-control" placeholder="ログイン名" required autofocus>

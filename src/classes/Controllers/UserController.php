@@ -186,7 +186,9 @@ class UserController extends Controller
 
         // パスワードの検証
         if ($this->verifyPassword($password)) {
-            if ($password == $user['password']) {
+            $p = password_hash($password, PASSWORD_DEFAULT);
+            // パスワードだけ更新
+            if ($p == $user['password']) {
                 $sql = 'UPDATE m_user SET login_id = :login_id
                      WHERE user_id = :user_id';
 
@@ -204,6 +206,7 @@ class UserController extends Controller
                         ->write('問題が発生しました:別の名前を使用してください');
                 }
             } else {
+                // ユーザ名とパスワードを更新
                 $password = password_hash($password, PASSWORD_DEFAULT);
 
                 $sql = 'UPDATE m_user SET login_id = :login_id, password = :password
@@ -213,7 +216,7 @@ class UserController extends Controller
 
                 // プリペアードステートメントを安全に代入
                 try {
-                    $stmt->bindParam(':login_id', $loginid, PDO::PARAM_STR);
+                    $stmt->bindParam(':login_id', $loginId, PDO::PARAM_STR);
                     $stmt->bindParam(':password', $password, PDO::PARAM_STR);
                     $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
 
