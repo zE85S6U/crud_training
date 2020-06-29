@@ -24,28 +24,28 @@
                 <div class="col-md-12">
                     <form class="needs-validation" action="/user" method="post"
                           enctype="multipart/form-data">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="productName">名前</label>
-                                <input type="text" class="form-control" name="login_id" id="login_id"
-                                       placeholder=""
-                                       value="<?= $user['login_id'] ?>"
-                                       required>
-                                <div class="invalid-feedback">
-                                    ユーザ名を入力して下さい
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="productName">パスワード</label>
-                                <input type="password" class="form-control" name="password" id="password" placeholder=""
-                                       value="<?= $user['password'] ?>"
-                                       required>
-                                <div class="invalid-feedback">
-                                    パスワードを入力してください
-                                </div>
-                            </div>
-                            <input type="hidden" name="user_id" id="user_id" value="<?= $user['user_id'] ?>">
+                        <label for="productName">名前</label>
+                        <input type="text" class="form-control" name="login_id" id="login_id"
+                               placeholder=""
+                               value="<?= $user['login_id'] ?>"
+                               required>
+                        <div class="invalid-feedback">
+                            ユーザ名を入力して下さい
                         </div>
+                        <?php if (isset($data['auth_error'])): ?>
+                            <span class="text-danger d-block small"><?= $data['auth_error']; ?></span>
+                        <?php endif; ?>
+                        <label for="productName">パスワード</label>
+                        <input type="password" class="form-control" name="password" id="password" placeholder=""
+                               value="<?= $user['password'] ?>"
+                               required>
+                        <div class="invalid-feedback">
+                            パスワードを入力してください
+                        </div>
+                        <input type="hidden" name="user_id" id="user_id" value="<?= $user['user_id'] ?>">
+                        <?php if (isset($data['password_error'])): ?>
+                            <span class="text-danger d-block small"><?= $data['password_error']; ?></span>
+                        <?php endif; ?>
                         <hr class="mb-4">
                         <button class="btn btn-primary btn-lg btn-block imageSubmit" type="submit">利用者情報の更新</button>
                         <button class="btn btn-danger btn-lg btn-block mb-3" name="_METHOD" value="delete"

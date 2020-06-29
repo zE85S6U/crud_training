@@ -56,7 +56,7 @@ class UserController extends Controller
             $stmt->execute();
         } catch (Exception $e) {
             $data = [
-                'login_id_error' =>  '問題が発生しました:別の名前を使用してください。'
+                'login_id_error' =>  '問題が発生しました 別の名前を使用してください。'
             ];
             return $this->renderer->render($response, '/user/signup.phtml',  $data);
         }
@@ -104,6 +104,11 @@ class UserController extends Controller
             $_SESSION['user']['user_id'] = (int)$user['user_id'];
             $_SESSION['user']['login_id'] = $user['login_id'];
             $_SESSION['user']['auth'] = $user['auth'];
+        } else {
+            $data = [
+            'auth_error' =>  'ログインできません　ログイン情報をお確かめ下さい。'
+            ];
+            return $this->renderer->render($response, '/user/login.phtml', $data);
         }
 
         // 正常に認証出来たらTOPページへリダイレクトする
@@ -169,9 +174,9 @@ class UserController extends Controller
      * ユーザ情報更新
      * @param Request $request
      * @param Response $response
-     * @return Response
+     * @return ResponseInterface
      */
-    public function update(Request $request, Response $response): Response
+    public function update(Request $request, Response $response): ResponseInterface
     {
         $userId = (int)e($request->getParsedBodyParam('user_id'));
         $password = e(trim($request->getParsedBodyParam('password')));
@@ -200,10 +205,10 @@ class UserController extends Controller
 
                     $stmt->execute();
                 } catch (Exception $e) {
-                    return $response
-                        ->withStatus(500)
-                        ->withHeader('Content-Type', 'text/html')
-                        ->write('問題が発生しました:別の名前を使用してください');
+                    $data = [
+                        'auth_error' =>  '問題が発生しました　別の名前を使用してください。'
+                    ];
+                    return $this->renderer->render($response, '/user/profile.phtml', $data);
                 }
             } else {
                 // ユーザ名とパスワードを更新
@@ -222,17 +227,17 @@ class UserController extends Controller
 
                     $stmt->execute();
                 } catch (Exception $e) {
-                    return $response
-                        ->withStatus(500)
-                        ->withHeader('Content-Type', 'text/html')
-                        ->write('問題が発生しました:別の名前を使用してください');
+                    $data = [
+                        'auth_error' =>  '問題が発生しました　別の名前を使用してください。'
+                    ];
+                    return $this->renderer->render($response, '/user/profile.phtml', $data);
                 }
             }
         } else {
-            return $response
-                ->withStatus(500)
-                ->withHeader('Content-Type', 'text/html')
-                ->write(' パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。');
+            $data = [
+                'password_error' =>  'パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。'
+            ];
+            return $this->renderer->render($response, '/user/profile.phtml', $data);
         }
 
         // 保存が正常に出来たらTOPページへリダイレクトする

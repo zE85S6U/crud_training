@@ -13,12 +13,14 @@
         </p>
     </div>
     <form action="/login" method="post" class="form-signin">
-        <p class="text-danger"></p>
         <h1 class="h3 mb-3 font-weight-normal">ログイン</h1>
         <label for="inputName" class="sr-only">ログイン名</label>
         <input type="text" name="login_id" id="inputName" class="form-control" placeholder="ログイン名" required autofocus>
         <label for="inputPassword" class="sr-only">パスワード</label>
         <input type="password" name="password" id="inputPassword" class="form-control" placeholder="パスワード" required>
+        <?php if (isset($data['auth_error'])): ?>
+            <span class="text-danger d-block small"><?= $data['auth_error']; ?></span>
+        <?php endif; ?>
         <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" value="remember-me" id="rememberCheck">
             <label class="form-check-label" for="rememberCheck">
