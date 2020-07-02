@@ -7,7 +7,6 @@ namespace Classes\Controllers;
 use Exception;
 use PDO;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -32,7 +31,7 @@ class UserController extends Controller
      */
     public function store(Request $request, Response $response): ResponseInterface
     {
-        $loginid = e(trim($request->getParsedBodyParam('login_id')));
+        $loginId = e(trim($request->getParsedBodyParam('login_id')));
 
         // パスワードの検証
         $password = trim($request->getParsedBodyParam('password'));
@@ -40,7 +39,7 @@ class UserController extends Controller
             $password = password_hash($password, PASSWORD_DEFAULT);
         } else {
             $data = [
-                'password_error' =>  'パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。'
+                'password_error' => 'パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。'
             ];
             return $this->renderer->render($response, '/user/signup.phtml', $data);
         }
@@ -51,14 +50,14 @@ class UserController extends Controller
 
         // プリペアードステートメントを安全に代入
         try {
-            $stmt->bindParam(':login_id', $loginid, PDO::PARAM_STR);
+            $stmt->bindParam(':login_id', $loginId, PDO::PARAM_STR);
             $stmt->bindParam(':password', $password, PDO::PARAM_STR);
             $stmt->execute();
         } catch (Exception $e) {
             $data = [
-                'login_id_error' =>  '問題が発生しました 別の名前を使用してください。'
+                'login_id_error' => '問題が発生しました 別の名前を使用してください。'
             ];
-            return $this->renderer->render($response, '/user/signup.phtml',  $data);
+            return $this->renderer->render($response, '/user/signup.phtml', $data);
         }
 
         // 保存が正常に出来たらTOPページへリダイレクトする
@@ -77,6 +76,17 @@ class UserController extends Controller
     }
 
     /**
+     * 管理者ログインページへ
+     * @param Request $request
+     * @param Response $response
+     * @return ResponseInterface
+     */
+    public function admin(Request $request, Response $response): ResponseInterface
+    {
+        return $this->renderer->render($response, '/user/admin.phtml');
+    }
+
+    /**
      * ログイン
      * @param Request $request
      * @param Response $response
@@ -84,35 +94,53 @@ class UserController extends Controller
      */
     public function login(Request $request, Response $response): ResponseInterface
     {
-        $loginid = e($request->getParsedBodyParam('login_id'));
-        $password = e($request->getParsedBodyParam('password'));
-
-        $sql = 'SELECT * FROM m_user WHERE login_id = :login_id';
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':login_id', $loginid, PDO::PARAM_STR);
-        $stmt->execute();
-        $user = $stmt->fetch();
+        list($user, $password) = $this->getUser($request, $response);
 
         if (!$user) {
             $data = [
-                'auth_error' =>  'ログインできません　ログイン情報をお確かめ下さい。'
+                'auth_error' => 'ログインできません　ログイン情報をお確かめ下さい。'
             ];
-            return $this->renderer->render($response, '/user/login.phtml', $data);
-        }
-
-        if ($user && password_verify($password, $user['password'])) {
+        } else if (! $user && password_verify($password, $user['password'])) {
+            $data = [
+                'auth_error' => 'ログインできません　ログイン情報をお確かめ下さい。'
+            ];
+        } else {
             $_SESSION['user']['user_id'] = (int)$user['user_id'];
             $_SESSION['user']['login_id'] = $user['login_id'];
             $_SESSION['user']['auth'] = $user['auth'];
-        } else {
-            $data = [
-            'auth_error' =>  'ログインできません　ログイン情報をお確かめ下さい。'
-            ];
+        }
+
+        if(isset($data)) {
             return $this->renderer->render($response, '/user/login.phtml', $data);
         }
 
         // 正常に認証出来たらTOPページへリダイレクトする
         return $response->withRedirect("/");
+    }
+
+    /**
+     * フォームに入力されたユーザ名とパスワードから
+     * ユーザ情報を選択する
+     * @param Request $request
+     * @param Response $response
+     * @return array
+     */
+    private function getUser(Request $request, Response $response) :array
+    {
+
+        $loginId = e($request->getParsedBodyParam('login_id'));
+        $password = e($request->getParsedBodyParam('password'));
+
+        $sql = 'SELECT * FROM m_user WHERE login_id = :login_id';
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':login_id', $loginId, PDO::PARAM_STR);
+        $stmt->execute();
+        $user = $stmt->fetch();
+
+        return [
+            $user,
+            $password
+        ];
     }
 
     /**
@@ -155,7 +183,6 @@ class UserController extends Controller
                     INNER JOIN m_product mp on dd.product_id = mp.product_id
                 WHERE user_id = :user_id ORDER BY order_date DESC';
         $stmt = $this->db->prepare($sql);
-
 
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
         $stmt->execute();
@@ -206,7 +233,7 @@ class UserController extends Controller
                     $stmt->execute();
                 } catch (Exception $e) {
                     $data = [
-                        'auth_error' =>  '問題が発生しました　別の名前を使用してください。'
+                        'auth_error' => '問題が発生しました　別の名前を使用してください。'
                     ];
                     return $this->renderer->render($response, '/user/profile.phtml', $data);
                 }
@@ -228,14 +255,14 @@ class UserController extends Controller
                     $stmt->execute();
                 } catch (Exception $e) {
                     $data = [
-                        'auth_error' =>  '問題が発生しました　別の名前を使用してください。'
+                        'auth_error' => '問題が発生しました　別の名前を使用してください。'
                     ];
                     return $this->renderer->render($response, '/user/profile.phtml', $data);
                 }
             }
         } else {
             $data = [
-                'password_error' =>  'パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。'
+                'password_error' => 'パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。'
             ];
             return $this->renderer->render($response, '/user/profile.phtml', $data);
         }
