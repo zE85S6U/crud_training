@@ -20,9 +20,11 @@ ul {
     padding: 15px;
     margin: auto;
 }
+
 .form-signin .checkbox {
     font-weight: 400;
 }
+
 .form-signin .form-control {
     position: relative;
     box-sizing: border-box;
@@ -30,14 +32,17 @@ ul {
     padding: 10px;
     font-size: 16px;
 }
+
 .form-signin .form-control:focus {
     z-index: 2;
 }
+
 .form-signin input[type="email"] {
     margin-bottom: -1px;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
 }
+
 .form-signin input[type="password"] {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
@@ -49,13 +54,28 @@ ul {
 }
 
 /*ニュース*/
-dt{
+dt {
     float: left;
-    clear: left ;
-    margin-right: 0.5em ;
-    width: 120px ;
+    clear: left;
+    margin-right: 0.5em;
+    width: 120px;
 }
 
-dd{
-    margin-left: 1em ;
+dd {
+    margin-left: 1em;
+}
+
+@media screen and ( max-width: 576px) {
+    /*　画面サイズが768pxから1024pxまではここを読み込む　*/
+    dt {
+        float: left;
+        clear: left;
+        margin-right: 0.5em;
+        width: 85px;
+    }
+
+    dd {
+        margin-left: 1em;
+    }
+
 }

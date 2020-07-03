@@ -4,6 +4,7 @@
 namespace Classes\Controllers;
 
 
+use Classes\Model\Users;
 use Exception;
 use PDO;
 use Psr\Http\Message\ResponseInterface;
@@ -32,9 +33,9 @@ class UserController extends Controller
     public function store(Request $request, Response $response): ResponseInterface
     {
         $loginId = e(trim($request->getParsedBodyParam('login_id')));
+        $password = trim($request->getParsedBodyParam('password'));
 
         // パスワードの検証
-        $password = trim($request->getParsedBodyParam('password'));
         if ($this->verifyPassword($password)) {
             $password = password_hash($password, PASSWORD_DEFAULT);
         } else {
@@ -76,17 +77,6 @@ class UserController extends Controller
     }
 
     /**
-     * 管理者ログインページへ
-     * @param Request $request
-     * @param Response $response
-     * @return ResponseInterface
-     */
-    public function admin(Request $request, Response $response): ResponseInterface
-    {
-        return $this->renderer->render($response, '/user/admin.phtml');
-    }
-
-    /**
      * ログイン
      * @param Request $request
      * @param Response $response
@@ -94,53 +84,27 @@ class UserController extends Controller
      */
     public function login(Request $request, Response $response): ResponseInterface
     {
-        list($user, $password) = $this->getUser($request, $response);
+        $user = new Users($this->db);
 
-        if (!$user) {
-            $data = [
-                'auth_error' => 'ログインできません　ログイン情報をお確かめ下さい。'
-            ];
-        } else if (! $user && password_verify($password, $user['password'])) {
-            $data = [
-                'auth_error' => 'ログインできません　ログイン情報をお確かめ下さい。'
-            ];
+        $loginId = e($request->getParsedBodyParam('login_id'));
+        $pass = e($request->getParsedBodyParam('password'));
+
+        $account = $user->getUser($loginId);
+
+        $error = $user->validate($account, $pass);
+
+        if (!$error && !$account['auth']) {
+            // 正常ログインかつ一般ユーザであればセッションに情報を保存
+            $_SESSION['user']['user_id'] = (int)$account['user_id'];
+            $_SESSION['user']['login_id'] = $account['login_id'];
+            $_SESSION['user']['auth'] = $account['auth'];
         } else {
-            $_SESSION['user']['user_id'] = (int)$user['user_id'];
-            $_SESSION['user']['login_id'] = $user['login_id'];
-            $_SESSION['user']['auth'] = $user['auth'];
-        }
-
-        if(isset($data)) {
-            return $this->renderer->render($response, '/user/login.phtml', $data);
+            // 失敗の場合はログイン画面に戻りエラー表示
+            return $this->renderer->render($response, '/user/login.phtml', $error);
         }
 
         // 正常に認証出来たらTOPページへリダイレクトする
         return $response->withRedirect("/");
-    }
-
-    /**
-     * フォームに入力されたユーザ名とパスワードから
-     * ユーザ情報を選択する
-     * @param Request $request
-     * @param Response $response
-     * @return array
-     */
-    private function getUser(Request $request, Response $response) :array
-    {
-
-        $loginId = e($request->getParsedBodyParam('login_id'));
-        $password = e($request->getParsedBodyParam('password'));
-
-        $sql = 'SELECT * FROM m_user WHERE login_id = :login_id';
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':login_id', $loginId, PDO::PARAM_STR);
-        $stmt->execute();
-        $user = $stmt->fetch();
-
-        return [
-            $user,
-            $password
-        ];
     }
 
     /**
@@ -163,37 +127,18 @@ class UserController extends Controller
      */
     public function profile(Request $request, Response $response): Response
     {
-        $userId = $_SESSION['user']['user_id'];
+        $loginId = $_SESSION['user']['login_id'];
 
-        // ユーザ情報
-        $sql = 'SELECT * FROM m_user WHERE user_id = :user_id';
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-        $user = $stmt->fetch();
-
-        // クリア
-        $sql = null;
-        $stmt = null;
-
-        // 購入履歴
-        $sql = 'SELECT CAST(order_date as date), product_name, price, order_quantity, image_dir
-                FROM d_order d
-                    INNER JOIN d_order_details dd on d.order_id = dd.order_id
-                    INNER JOIN m_product mp on dd.product_id = mp.product_id
-                WHERE user_id = :user_id ORDER BY order_date DESC';
-        $stmt = $this->db->prepare($sql);
-
-        $stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
-        $stmt->execute();
-        $history = $stmt->fetchAll();
-
+        $user = new Users($this->db);
+        $account = $user->getUser($loginId);                        // ユーザ情報
+        $history = $user->getPurchaseHistory($account['user_id']);  // 購入履歴
 
         // ユーザ情報をまとめた配列
         $data = [
-            'user' => $user,
+            'user' => $account,
             'history' => $history
         ];
+
         return $this->renderer->render($response, "/user/profile.phtml", $data);
     }
 
@@ -208,7 +153,6 @@ class UserController extends Controller
         $userId = (int)e($request->getParsedBodyParam('user_id'));
         $password = e(trim($request->getParsedBodyParam('password')));
         $loginId = e(trim($request->getParsedBodyParam('login_id')));
-
 
         $sql = 'SELECT * FROM m_user WHERE user_id = :user_id';
         $stmt = $this->db->prepare($sql);
@@ -300,13 +244,7 @@ class UserController extends Controller
      */
     private function verifyPassword($password): bool
     {
-        $result = null;
-        // 半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下
-        if (preg_match('/\A(?=.*?[a-z])(?=.*?\d)(?=.*?[!-\/:-@[-`{-~])[!-~]{8,100}+\z/i', $password)) {
-            $result = true;
-        } else {
-            $result = false;
-        }
-        return $result;
+        // 半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下か
+        return preg_match('/\A(?=.*?[a-z])(?=.*?\d)(?=.*?[!-\/:-@[-`{-~])[!-~]{8,100}+\z/i', $password);
     }
 }

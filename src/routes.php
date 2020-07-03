@@ -30,9 +30,6 @@ return function (App $app) {
     // ログイン
     $app->post('/login', UserController::class . ':login');
 
-    // 管理者ログイン
-    $app->get('/login/admin', UserController::class . ':admin');
-
     // ログアウト
     $app->get('/logout', UserController::class . ':logout');
 

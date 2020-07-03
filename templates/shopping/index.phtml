@@ -3,17 +3,30 @@
 
 <!--ニュース-->
 <div class="container">
-    <div class="pricing-header px-2 py-2 pt-md-3 pb-md-3 mx-auto">
-        <h1 class="display-5">News</h1>
-        <?php foreach ($news as $headline): ?>
-            <dl>
-                <dt><?= $headline['now'] ?></phpv></dt>
-                <dd><?= $headline['nickname'] . 'な' . $headline['product_name'] ?>が仲間入りしました。</dd>
-            </dl>
-            <hr>
-        <?php endforeach; ?>
+    <div class="d-block d-sm-none">
+        <div class="mx-auto">
+            <h5>News</h5>
+            <?php for ($i = 0 ; $i < 2; $i++): ?>
+                <dl>
+                    <dt><?= $news[$i]['now'] ?></dt>
+                    <dd><?= $news[$i]['nickname'] . 'な' . $news[$i]['product_name'] ?>が仲間入りしました。</dd>
+                </dl>
+                <hr>
+            <?php endfor; ?>
+        </div>
     </div>
-</div>
+    <div class="d-none d-sm-block">
+        <div class="px-2 py-2 pt-md-3 pb-md-3 mx-auto">
+            <h1 class="display-5">News</h1>
+            <?php foreach ($news as $headline): ?>
+                <dl>
+                    <dt><?= $headline['now'] ?></dt>
+                    <dd><?= $headline['nickname'] . 'な' . $headline['product_name'] ?>が仲間入りしました。</dd>
+                </dl>
+                <hr>
+            <?php endforeach; ?>
+        </div>
+    </div>
 <!--商品-->
 <div class="card-group">
     <?php foreach ($products as $product): ?>
