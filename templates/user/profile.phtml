@@ -57,37 +57,45 @@
 
             <!-- 購入履歴 -->
             <div class="tab-pane" id="history" role="tabpanel" aria-labelledby="history-tab">
-                <div class="col-md-12">
-                    <?php if (!empty($data['history'])) : ?>
-                        <!-- 商品 -->
-                        <?php $buy_day = null; ?>
-                        <?php foreach ($data['history'] as $item) : ?>
-                            <div class="row">
-                                <ul class="flex-fill">
-                                    <?php
-                                    if ($item['order_date'] != $buy_day && $buy_day != null) {
-                                        echo "<hr>";
-                                    }
-                                    ?>
-                                    <li class="d-sm-flex  justify-content-end align-items-center">
+                <?php if (!empty($data['history'])) : ?>
+                    <!-- 商品 -->
+                    <?php $buy_day = null; ?>
+                    <div class="table-responsive">
+                        <table class="table text-nowrap">
+                            <thead>
+                            <tr class="d-md-flex">
+                                <th class="col-2">購入日</th>
+                                <th class="col-3 text-left">商品名</th>
+                                <th class="col-3 text-right">価格</th>
+                                <th class="col-2 text-right">購入数</th>
+                                <th class="col-2 text-center">画像</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach ($data['history'] as $item) : ?>
+                                <tr class="d-md-flex">
+                                    <td class="col-2">
                                         <?php if ($item['order_date'] != $buy_day)  : ?>
-                                            <p class="col-sm-2">購入日<?= $item['order_date'] ?></p>
+                                            <?= $item['order_date'] ?>
                                         <?php endif; ?>
-                                        <p class="col-sm-3"><?= $item['product_name'] ?></p>
-                                        <p class="col-sm-3 text-right"><?= yen($item['price']) ?></p>
-                                        <p class="col-sm-2 text-right"><?= $item['order_quantity'] ?>個</p>
-                                        <img class="col-sm-2 img-fluid"
+                                    </td>
+                                    <td class="col-3 text-left"><?= $item['product_name'] ?></td>
+                                    <td class="col-3 text-right"><?= yen($item['price']) ?></td>
+                                    <td class="col-2 text-right"><?= $item['order_quantity'] ?></td>
+                                    <td class="col-2">
+                                        <img class="img-thumbnail"
                                              src="<?= '/image/file/' . $item['image_dir'] ?>"
                                              alt="商品画像">
-                                    </li>
-                                </ul>
-                            </div>
-                            <?php $buy_day = $item['order_date']; ?>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <p class="h5 p-4 mt-2 text-center">購入履歴はありません。</p>
-                    <?php endif; ?>
-                </div>
+                                    </td>
+                                </tr>
+                                <?php $buy_day = $item['order_date']; ?>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <p class="h5 p-4 mt-2 text-center">購入履歴はありません。</p>
+                <?php endif; ?>
             </div>
         </div>
     </div>
