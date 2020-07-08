@@ -55,7 +55,6 @@ class Users
     {
         $error = [];
 
-        $isOk = password_verify('$gT49RVd', '$2y$10$wz7vChScjQppMdSTIf/S7e5GSRbJ7F936Q/dd1g1N/D89ljKRqD7y');
         if (!$user) {
             // ユーザ情報が取得できない
             $error = [

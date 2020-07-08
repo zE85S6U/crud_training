@@ -98,6 +98,12 @@ class UserController extends Controller
             $_SESSION['user']['user_id'] = (int)$account['user_id'];
             $_SESSION['user']['login_id'] = $account['login_id'];
             $_SESSION['user']['auth'] = $account['auth'];
+        } else if ($account['auth']) {
+            // 正常ログインかつ一般ユーザであればセッションに情報を保存
+            $_SESSION['user']['user_id'] = (int)$account['user_id'];
+            $_SESSION['user']['login_id'] = $account['login_id'];
+            $_SESSION['user']['auth'] = $account['auth'];
+            return $this->renderer->render($response, '/product/index.phtml');
         } else {
             // 失敗の場合はログイン画面に戻りエラー表示
             return $this->renderer->render($response, '/user/login.phtml', $error);
