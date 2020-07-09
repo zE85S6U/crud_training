@@ -79,7 +79,7 @@
                                             <?= $item['order_date'] ?>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="col-3 text-left"><?= $item['product_name'] ?></td>
+                                    <td class="col-3 text-left"><?= e($item['product_name']) ?></td>
                                     <td class="col-3 text-right"><?= yen($item['price']) ?></td>
                                     <td class="col-2 text-right"><?= $item['order_quantity'] ?></td>
                                     <td class="col-2">

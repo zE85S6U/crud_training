@@ -15,7 +15,7 @@
                 <div class="col-md-6 mb-3">
                     <label for="productName">商品名</label>
                     <input type="text" class="form-control" name="product_name" id="productName" placeholder=""
-                           value="<?= $product['product_name'] ?>"
+                           value="<?= e($product['product_name']) ?>"
                            pattern=".*\S+.*"
                            required>
                     <div class="invalid-feedback">

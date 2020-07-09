@@ -8,8 +8,8 @@
             <h5>News</h5>
             <?php for ($i = 0 ; $i < 2; $i++): ?>
                 <dl>
-                    <dt><?= $news[$i]['now'] ?></dt>
-                    <dd><?= $news[$i]['nickname'] . 'な' . $news[$i]['product_name'] ?>が仲間入りしました。</dd>
+                    <dt><?= e($news[$i]['now']) ?></dt>
+                    <dd><?= e($news[$i]['nickname']) . 'な' . e($news[$i]['product_name']) ?>が仲間入りしました。</dd>
                 </dl>
                 <hr>
             <?php endfor; ?>
@@ -20,8 +20,8 @@
             <h1 class="display-5">News</h1>
             <?php foreach ($news as $headline): ?>
                 <dl>
-                    <dt><?= $headline['now'] ?></dt>
-                    <dd><?= $headline['nickname'] . 'な' . $headline['product_name'] ?>が仲間入りしました。</dd>
+                    <dt><?= e($headline['now']) ?></dt>
+                    <dd><?= e($headline['nickname']) . 'な' . e($headline['product_name']) ?>が仲間入りしました。</dd>
                 </dl>
                 <hr>
             <?php endforeach; ?>
@@ -35,7 +35,7 @@
                 <img class="card-img" src="<?= '/image/file/' . $product['image_dir'] ?>" alt="商品画像">
 
                 <div class="card-img-overlay">
-                    <h5 class="card-title"><?= $product['product_name'] ?></h5>
+                    <h5 class="card-title"><?= e($product['product_name']) ?></h5>
                     <p class="card-text">price : <?= yen($product['price']) ?></p>
                     <p class="card-text">stock : <?= stock_confirmation($product['stock']) ?></p>
                 </div>

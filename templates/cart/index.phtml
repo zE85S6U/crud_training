@@ -20,7 +20,7 @@
                     <ul class="list-group flex-fill">
                         <li class="list-group-item justify-content-between d-lg-flex align-items-center mb-3">
                             <img class="col-lg-2 img-fluid" src="<?= $item['image_dir'] ?>" alt="商品画像">
-                            <span class="col-lg-3"><?= $item['product_name'] ?></span>
+                            <span class="col-lg-3"><?= e($item['product_name']) ?></span>
                             <span class="col-lg-2"><?= yen($item['price']) ?></span>
                             <form class="col-lg-3" action="/cart/update" method="post">
                                 <select name="order_quantity">
