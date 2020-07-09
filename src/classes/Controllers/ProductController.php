@@ -4,12 +4,9 @@
 namespace Classes\Controllers;
 
 
+use Classes\Models\Products;
 use Exception;
-use PDO;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Slim\Exception\NotFoundException;
-use Slim\Exception\SlimException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -26,9 +23,8 @@ class ProductController extends Controller
      */
     public function index(Request $request, Response $response): ResponseInterface
     {
-        $sql = 'SELECT * FROM m_product ORDER BY product_id';
-        $stmt = $this->db->query($sql);
-        $products = $stmt->fetchAll();
+        $product = new Products($this->db);
+        $products = $product->getProducts();
         $data = ['products' => $products];
         return $this->renderer->render($response, '/product/index.phtml', $data);
     }
@@ -53,33 +49,20 @@ class ProductController extends Controller
      */
     public function store(Request $request, Response $response): Response
     {
-        // postされたデータを変数に代入
-        $product = $request->getParsedBody();
+        $product = new Products($this->db);
 
-        $sql = 'INSERT INTO m_product (product_name, price, stock, image_dir, description, nickname) '
-            . 'VALUES (:product_name, :price, :stock, :image_dir, :description, :nickname)';
-        $stmt = $this->db->prepare($sql);
+        // フォームに入力された商品情報
+        $item = $request->getParsedBody();
 
         // 画像ファイルをサーバにアップロード
         $image = $this->imgUpload();
 
-
         // 画像が選択されなかった場合の画像URLはデフォルト値
         $image = $image ?? 'default.jpg';
+        $item['image'] = $image;
 
-        // プリペアードステートメントを安全に代入
-        $product_name = trim($product['product_name']);
-        $description = trim($product['description']);
-        $nickname = trim($product['nickname']);
-        $stmt->bindParam(':product_name', $product_name, PDO::PARAM_STR);
-        $stmt->bindParam(':price', $product['price'], PDO::PARAM_INT);
-        $stmt->bindParam(':stock', $product['stock'], PDO::PARAM_INT);
-        $stmt->bindParam(':image_dir', $image, PDO::PARAM_STR);
-        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
-        $stmt->bindParam(':nickname', $nickname, PDO::PARAM_STR);
-
-        $result = $stmt->execute();
-        if (!$result) throw new SlimException($request, $response);
+        // 商品をデータベースに追加
+        $product->insertProducts($item);
 
         // 保存が正常に出来たら一覧ページへリダイレクトする
         return $response->withRedirect("/product");
@@ -91,21 +74,16 @@ class ProductController extends Controller
      * @param Response $response
      * @param array $args
      * @return ResponseInterface
-     * @throws NotFoundException
      */
     public function edit(Request $request, Response $response, array $args): ResponseInterface
     {
-        $sql = 'SELECT * FROM m_product WHERE product_id = :id';
-        $stmt = $this->db->prepare($sql);
-        $id = (int)$args['id'];
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $product = $stmt->fetch();
+        $product = new Products($this->db);
 
-        // 存在しない商品番号にアクセスした場合
-        if (!$product) throw new NotFoundException($request, $response);
+        // IDから商品情報を取得
+        $item = $product->getProductsOfId($args);
 
-        $data = ['product' => $product];
+        $data = ['product' => $item];
+
         return $this->renderer->render($response, '/product/edit.phtml', $data);
     }
 
@@ -119,37 +97,21 @@ class ProductController extends Controller
      */
     public function update(Request $request, Response $response, array $args): Response
     {
-        $product = $this->fetchProduct($request, $response, $args['id']);
-        // 存在しない商品番号にアクセスした場合
-        if (!$product) throw new NotFoundException($request, $response);
+        $product = new Products($this->db);
 
-        // 画像ファイルをサーバにアップロード
-        $image = $this->imgUpload();
+        // IDから商品情報を取得
+        $item = $product->getProductsOfId($args);
 
         // 更新前の商品を取得
-        $product['product_name'] = trim($request->getParsedBodyParam('product_name'));
-        $product['price'] = $request->getParsedBodyParam('price');
-        $product['stock'] = $request->getParsedBodyParam('stock');
-        $product['image_dir'] = $image ?? $product['image_dir'];
-        $product['description'] = trim($request->getParsedBodyParam('description'));
-        $product['nickname'] = trim($request->getParsedBodyParam('nickname'));
+        $item['product_name'] = trim($request->getParsedBodyParam('product_name'));
+        $item['price'] = $request->getParsedBodyParam('price');
+        $item['stock'] = $request->getParsedBodyParam('stock');
+        $item['image_dir'] = $image ?? $item['image_dir'];
+        $item['description'] = trim($request->getParsedBodyParam('description'));
+        $item['nickname'] = trim($request->getParsedBodyParam('nickname'));
 
-        $sql = 'UPDATE m_product SET product_name = :product_name, price = :price,
-                     stock = :stock, image_dir = :image_dir, description = :description, nickname = :nickname
-                     WHERE product_id = :product_id';
-
-        $stmt = $this->db->prepare($sql);
-
-        // プリペアードステートメントを安全に代入
-        $stmt->bindParam(':product_id', $product['product_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':product_name', $product['product_name'], PDO::PARAM_STR);
-        $stmt->bindParam(':price', $product['price'], PDO::PARAM_INT);
-        $stmt->bindParam(':stock', $product['stock'], PDO::PARAM_INT);
-        $stmt->bindParam(':image_dir', $product['image_dir'], PDO::PARAM_STR);
-        $stmt->bindParam(':description', $product['description'], PDO::PARAM_STR);
-        $stmt->bindParam(':nickname', $product['nickname'], PDO::PARAM_STR);
-
-        $stmt->execute();
+        // 商品情報を更新
+        $product->updateProducts($item);
 
         return $response->withRedirect("/product");
     }
@@ -164,36 +126,13 @@ class ProductController extends Controller
      */
     public function delete(Request $request, Response $response, array $args): Response
     {
-        $product = $this->fetchProduct($request, $response, $args['id']);
-        // 存在しない商品番号にアクセスした場合
-        if (!$product) throw new NotFoundException($request, $response);
+        $product = new Products($this->db);
 
-        $stmt = $this->db->prepare('DELETE FROM m_product WHERE product_id = :id');
-        $stmt->execute(['id' => $product['product_id']]);
+        // IDから商品を削除
+        $product->deleteProduct($args);
+
         return $response->withRedirect("/product");
     }
-
-    /**
-     * 商品をIDで検索
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param string $id
-     * @return array
-     * @throws NotFoundException
-     */
-    private function fetchProduct(ServerRequestInterface $request, ResponseInterface $response, string $id): array
-    {
-        $sql = 'SELECT * FROM m_product WHERE product_id = :id';
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $id]);
-        $product = $stmt->fetch();
-
-        // 存在しない商品番号にアクセスした場合
-        if (!$product) throw new NotFoundException($request, $response);
-
-        return $product;
-    }
-
 
     /**
      * 画像をサーバに保存
