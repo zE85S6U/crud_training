@@ -4,7 +4,7 @@
 namespace Classes\Controllers;
 
 
-use Classes\Model\Orders;
+use Classes\Models\Orders;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
