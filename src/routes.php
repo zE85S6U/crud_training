@@ -27,8 +27,14 @@ return function (App $app) {
     // ログインページへ
     $app->get('/login', UserController::class . ':show');
 
+    // 管理者ログインページへ
+    $app->get('/login/admin', UserController::class . ':show_admin');
+
     // ログイン
     $app->post('/login', UserController::class . ':login');
+
+    // 管理者ログイン
+    $app->post('/login/admin', UserController::class . ':login_admin');
 
     // ログアウト
     $app->get('/logout', UserController::class . ':logout');

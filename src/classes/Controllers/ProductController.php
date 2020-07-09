@@ -55,6 +55,7 @@ class ProductController extends Controller
     {
         // postされたデータを変数に代入
         $product = $request->getParsedBody();
+
         $sql = 'INSERT INTO m_product (product_name, price, stock, image_dir, description, nickname) '
             . 'VALUES (:product_name, :price, :stock, :image_dir, :description, :nickname)';
         $stmt = $this->db->prepare($sql);

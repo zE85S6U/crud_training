@@ -77,6 +77,17 @@ class UserController extends Controller
     }
 
     /**
+     * 管理者ログインページへ
+     * @param Request $request
+     * @param Response $response
+     * @return ResponseInterface
+     */
+    public function show_admin(Request $request, Response $response): ResponseInterface
+    {
+        return $this->renderer->render($response, '/user/login_admin.phtml');
+    }
+
+    /**
      * ログイン
      * @param Request $request
      * @param Response $response
@@ -98,19 +109,50 @@ class UserController extends Controller
             $_SESSION['user']['user_id'] = (int)$account['user_id'];
             $_SESSION['user']['login_id'] = $account['login_id'];
             $_SESSION['user']['auth'] = $account['auth'];
-        } else if ($account['auth']) {
-            // 正常ログインかつ一般ユーザであればセッションに情報を保存
-            $_SESSION['user']['user_id'] = (int)$account['user_id'];
-            $_SESSION['user']['login_id'] = $account['login_id'];
-            $_SESSION['user']['auth'] = $account['auth'];
-            return $this->renderer->render($response, '/product/index.phtml');
         } else {
             // 失敗の場合はログイン画面に戻りエラー表示
+            $error = [
+                'auth_error' => 'ログインできません　ログイン情報をお確かめ下さい。'
+            ];
             return $this->renderer->render($response, '/user/login.phtml', $error);
         }
 
         // 正常に認証出来たらTOPページへリダイレクトする
         return $response->withRedirect("/");
+    }
+
+    /**
+     * ログイン
+     * @param Request $request
+     * @param Response $response
+     * @return ResponseInterface
+     */
+    public function login_admin(Request $request, Response $response): ResponseInterface
+    {
+        $user = new Users($this->db);
+
+        $loginId = e($request->getParsedBodyParam('login_id'));
+        $pass = e($request->getParsedBodyParam('password'));
+
+        $account = $user->getUser($loginId);
+
+        $error = $user->validate($account, $pass);
+
+        if (!$error && $account['auth']) {
+            // 正常ログインかつ一般ユーザであればセッションに情報を保存
+            $_SESSION['user']['user_id'] = (int)$account['user_id'];
+            $_SESSION['user']['login_id'] = $account['login_id'];
+            $_SESSION['user']['auth'] = $account['auth'];
+        } else {
+            // 失敗の場合はログイン画面に戻りエラー表示
+            $error = [
+                'auth_error' => 'ログインできません　ログイン情報をお確かめ下さい。'
+            ];
+            return $this->renderer->render($response, '/user/login_admin.phtml', $error);
+        }
+
+        // 正常に認証出来たらTOPページへリダイレクトする
+        return $response->withRedirect("/product");
     }
 
     /**

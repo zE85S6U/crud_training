@@ -5,8 +5,6 @@ namespace Classes\Model;
 
 
 use PDO;
-use Slim\Http\Request;
-use Slim\Http\Response;
 
 class Users
 {
@@ -18,7 +16,7 @@ class Users
     }
 
     /**
-     * ユーザ情報を習得する
+     * ユーザ情報を取得する
      * @param $loginId
      * @return mixed
      */
@@ -32,6 +30,11 @@ class Users
         return $stmt->fetch();
     }
 
+    /**
+     * 購入履歴を取得する
+     * @param $userId
+     * @return array
+     */
     public function getPurchaseHistory($userId) {
         $sql = 'SELECT CAST(order_date as date), product_name, price, order_quantity, image_dir
                 FROM d_order d
