@@ -25,29 +25,27 @@
                     <form class="needs-validation" action="/user" method="post"
                           enctype="multipart/form-data">
                         <label for="productName">名前</label>
-                        <input type="text" class="form-control" name="login_id" id="login_id"
-                               placeholder=""
-                               value="<?= $user['login_id'] ?>"
-                               required>
-                        <div class="invalid-feedback">
-                            ユーザ名を入力して下さい
-                        </div>
-                        <?php if (isset($data['auth_error'])): ?>
-                            <span class="text-danger d-block small"><?= $data['auth_error']; ?></span>
-                        <?php endif; ?>
+                        <p><?= $user['login_id'] ?></p>
                         <label for="productName">パスワード</label>
                         <input type="password" class="form-control" name="password" id="password" placeholder=""
-                               value="<?= $user['password'] ?>"
-                               required>
+                            <?php if (isset($user['password'])) : ?>
+                               value="<?= $user['password'] ?>" required>
+                            <?php else: ?>
+                                required>
+                            <?php endif ?>
                         <div class="invalid-feedback">
                             パスワードを入力してください
                         </div>
-                        <input type="hidden" name="user_id" id="user_id" value="<?= $user['user_id'] ?>">
-                        <?php if (isset($data['password_error'])): ?>
-                            <span class="text-danger d-block small"><?= $data['password_error']; ?></span>
+                        <?php if (isset($data['error']['password_error'])) : ?>
+                            <span class="text-danger d-block small"><?= $data['error']['password_error']; ?></span>
                         <?php endif; ?>
                         <hr class="mb-4">
-                        <button class="btn btn-primary btn-lg btn-block imageSubmit" type="submit">利用者情報の更新</button>
+                        <input type="hidden" name="user_id" id="user_id"
+                            <?php if (isset($user['user_id'])) : ?>
+                               value="<?= $user['user_id'] ?>"
+                        <?php endif ?>
+                               required>
+                        <button class="btn btn-primary btn-lg btn-block imageSubmit" type="submit">パスワードの変更</button>
                         <button class="btn btn-danger btn-lg btn-block mb-3" name="_METHOD" value="delete"
                                 onclick="return confirm('本当に削除しますか？')">利用者情報の削除
                         </button>

@@ -180,11 +180,13 @@ class UserController extends Controller
         $user = new Users($this->db);
         $account = $user->getUser($loginId);                        // ユーザ情報
         $history = $user->getPurchaseHistory($account['user_id']);  // 購入履歴
+        $error = [];
 
         // ユーザ情報をまとめた配列
         $data = [
             'user' => $account,
-            'history' => $history
+            'history' => $history,
+            'error' => $error
         ];
 
         return $this->renderer->render($response, "/user/profile.phtml", $data);
@@ -200,67 +202,69 @@ class UserController extends Controller
     {
         $userId = (int)e($request->getParsedBodyParam('user_id'));
         $password = e(trim($request->getParsedBodyParam('password')));
-        $loginId = e(trim($request->getParsedBodyParam('login_id')));
 
+        // 現在の登録情報を取得
         $sql = 'SELECT * FROM m_user WHERE user_id = :user_id';
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
         $stmt->execute();
         $user = $stmt->fetch();
 
-        // パスワードの検証
-        if ($this->verifyPassword($password)) {
-            $p = password_hash($password, PASSWORD_DEFAULT);
-            // パスワードだけ更新
-            if ($p == $user['password']) {
-                $sql = 'UPDATE m_user SET login_id = :login_id
+        if ($user['password'] != $password) {
+            // パスワードの検証
+            if ($this->verifyPassword($password)) {
+                if (!password_verify($password, $user['password'])) {
+                    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                    $sql = 'UPDATE m_user SET password = :password
                      WHERE user_id = :user_id';
 
-                $stmt = $this->db->prepare($sql);
+                    $stmt = $this->db->prepare($sql);
 
-                try {
-                    $stmt->bindParam(':login_id', $loginId, PDO::PARAM_STR);
-                    $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+                    try {
+                        $stmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
+                        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
 
-                    $stmt->execute();
-                } catch (Exception $e) {
-                    $data = [
-                        'auth_error' => '問題が発生しました　別の名前を使用してください。'
-                    ];
-                    return $this->renderer->render($response, '/user/profile.phtml', $data);
+                        $stmt->execute();
+                    } catch (Exception $e) {
+
+                        $loginId = $_SESSION['user']['login_id'];
+
+                        $user = new Users($this->db);
+                        $account = $user->getUser($loginId);                        // ユーザ情報
+                        $history = $user->getPurchaseHistory($account['user_id']);  // 購入履歴
+                        $error = [
+                            'password_error' => 'パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。'
+                        ];
+
+                        // ユーザ情報をまとめた配列
+                        $data = [
+                            'user' => $account,
+                            'history' => $history,
+                            'error' => $error
+                        ];
+                        return $this->renderer->render($response, "/user/profile.phtml", $data);
+                    }
                 }
             } else {
-                // ユーザ名とパスワードを更新
-                $password = password_hash($password, PASSWORD_DEFAULT);
+                $loginId = $_SESSION['user']['login_id'];
 
-                $sql = 'UPDATE m_user SET login_id = :login_id, password = :password
-                     WHERE user_id = :user_id';
+                $user = new Users($this->db);
+                $account = $user->getUser($loginId);                        // ユーザ情報
+                $history = $user->getPurchaseHistory($account['user_id']);  // 購入履歴
+                $error = [
+                    'password_error' => 'パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。'
+                ];
 
-                $stmt = $this->db->prepare($sql);
-
-                // プリペアードステートメントを安全に代入
-                try {
-                    $stmt->bindParam(':login_id', $loginId, PDO::PARAM_STR);
-                    $stmt->bindParam(':password', $password, PDO::PARAM_STR);
-                    $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
-
-                    $stmt->execute();
-                } catch (Exception $e) {
-                    $data = [
-                        'auth_error' => '問題が発生しました　別の名前を使用してください。'
-                    ];
-                    return $this->renderer->render($response, '/user/profile.phtml', $data);
-                }
+                // ユーザ情報をまとめた配列
+                $data = [
+                    'user' => $account,
+                    'history' => $history,
+                    'error' => $error
+                ];
+                return $this->renderer->render($response, "/user/profile.phtml", $data);
             }
-        } else {
-            $data = [
-                'password_error' => 'パスワードは半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下で設定してください。'
-            ];
-            return $this->renderer->render($response, '/user/profile.phtml', $data);
         }
-
         // 保存が正常に出来たらTOPページへリダイレクトする
-        $_SESSION['user']['login_id'] = $loginId;
         return $response->withRedirect("/");
     }
 
@@ -271,7 +275,8 @@ class UserController extends Controller
      * @param array $args
      * @return Response
      */
-    public function delete(Request $request, Response $response, array $args): Response
+    public
+    function delete(Request $request, Response $response, array $args): Response
     {
         $userId = (int)e($request->getParsedBodyParam('user_id'));
 
@@ -290,7 +295,8 @@ class UserController extends Controller
      * @return bool
      * https://qiita.com/mpyw/items/886218e7b418dfed254b
      */
-    private function verifyPassword($password): bool
+    private
+    function verifyPassword($password): bool
     {
         // 半角英数字記号をそれぞれ1種類以上含む8文字以上100文字以下か
         return preg_match('/\A(?=.*?[a-z])(?=.*?\d)(?=.*?[!-\/:-@[-`{-~])[!-~]{8,100}+\z/i', $password);
