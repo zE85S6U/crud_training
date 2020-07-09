@@ -4,7 +4,7 @@
 namespace Classes\Controllers;
 
 
-use Classes\Model\Users;
+use Classes\Models\Users;
 use Exception;
 use PDO;
 use Psr\Http\Message\ResponseInterface;
