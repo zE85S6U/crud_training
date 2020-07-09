@@ -23,7 +23,6 @@ class Orders
      * @param Request $request
      * @param Response $response
      * @return int
-     * @throws SlimException
      */
     public function insertOrder(Request $request, Response $response): int
     {
@@ -69,7 +68,7 @@ class Orders
 
             $result = $stmt->execute();
             if (!$result) {
-                throw new SlimException($request,$response);
+                throw new SlimException($request, $response);
             }
 
             // 在庫を再計算する

@@ -10,7 +10,6 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 return function (App $app) {
-    $container = $app->getContainer();
 
     // 買い物サイトトップ
     $app->get('/', ShoppingController::class . ':index');

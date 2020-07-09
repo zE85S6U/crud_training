@@ -5,8 +5,7 @@ namespace Classes\Models;
 
 
 use PDO;
-use Slim\Exception\NotFoundException;
-use Slim\Exception\SlimException;
+
 
 class Products
 {
@@ -33,7 +32,8 @@ class Products
         return $stmt->fetch();
     }
 
-    public function getNews() {
+    public function getNews()
+    {
         $sql = 'SELECT product_name, nickname, CAST(m_product.create_at as date) as Now 
                     FROM m_product ORDER BY create_at DESC LIMIT 5';
         $stmt = $this->db->query($sql);
@@ -60,7 +60,8 @@ class Products
         $stmt->execute();
     }
 
-    public function updateProducts($item) {
+    public function updateProducts($item)
+    {
         $sql = 'UPDATE m_product SET product_name = :product_name, price = :price,
                      stock = :stock, image_dir = :image_dir, description = :description, nickname = :nickname
                      WHERE product_id = :product_id';
@@ -79,7 +80,8 @@ class Products
         $stmt->execute();
     }
 
-    public function deleteProduct($args){
+    public function deleteProduct($args)
+    {
         $stmt = $this->db->prepare('DELETE FROM m_product WHERE product_id = :id');
         $stmt->bindParam(':id', $args['id'], PDO::PARAM_INT);
 
