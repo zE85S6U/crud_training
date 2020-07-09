@@ -33,6 +33,13 @@ class Products
         return $stmt->fetch();
     }
 
+    public function getNews() {
+        $sql = 'SELECT product_name, nickname, CAST(m_product.create_at as date) as Now 
+                    FROM m_product ORDER BY create_at DESC LIMIT 5';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
+    }
+
     public function insertProducts($product)
     {
         $sql = 'INSERT INTO m_product (product_name, price, stock, image_dir, description, nickname) '
