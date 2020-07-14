@@ -4,9 +4,13 @@
 namespace Classes\Controllers;
 
 
+use Cassandra\Exception\InvalidQueryException;
 use Classes\Models\Products;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Exception\ContainerException;
+use Slim\Exception\NotFoundException;
+use Slim\Exception\SlimException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -62,7 +66,11 @@ class ProductController extends Controller
         $item['image'] = $image;
 
         // 商品をデータベースに追加
-        $product->insertProducts($item);
+        $result = $product->insertProducts($item);
+
+        if (!$result) {
+            throw new SlimException($request, $response);
+        }
 
         // 保存が正常に出来たら一覧ページへリダイレクトする
         return $response->withRedirect("/product");
@@ -74,6 +82,7 @@ class ProductController extends Controller
      * @param Response $response
      * @param array $args
      * @return ResponseInterface
+     * @throws Exception
      */
     public function edit(Request $request, Response $response, array $args): ResponseInterface
     {
@@ -82,6 +91,9 @@ class ProductController extends Controller
         // IDから商品情報を取得
         $item = $product->getProductsOfId($args);
 
+        if ($item) {
+            throw new NotFoundException($request, $response);
+        }
         $data = ['product' => $item];
 
         return $this->renderer->render($response, '/product/edit.phtml', $data);
@@ -111,7 +123,11 @@ class ProductController extends Controller
         $item['nickname'] = trim($request->getParsedBodyParam('nickname'));
 
         // 商品情報を更新
-        $product->updateProducts($item);
+        $result = $product->updateProducts($item);
+
+        if (!$result) {
+            throw new SlimException($request, $response);
+        }
 
         return $response->withRedirect("/product");
     }
@@ -129,8 +145,11 @@ class ProductController extends Controller
         $product = new Products($this->db);
 
         // IDから商品を削除
-        $product->deleteProduct($args);
+        $result =  $product->deleteProduct($args);
 
+        if (!$result) {
+            throw new SlimException($request, $result);
+        }
         return $response->withRedirect("/product");
     }
 

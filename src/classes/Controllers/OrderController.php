@@ -35,7 +35,7 @@ class OrderController extends Controller
         $order = new Orders($this->db);
 
         // 注文したユーザと日付を登録
-        $order_id = $order->insertOrder($request, $response);
+        $order_id = $order->insertOrder();
         // 購入商品をデータベースに登録
         $order->insertOrderDetails($request, $response, $order_id);
 

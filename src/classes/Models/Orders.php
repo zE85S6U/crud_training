@@ -20,11 +20,9 @@ class Orders
 
     /**
      * 注文したユーザと日付を登録
-     * @param Request $request
-     * @param Response $response
      * @return int
      */
-    public function insertOrder(Request $request, Response $response): int
+    public function insertOrder(): int
     {
         $sql = 'INSERT INTO d_order(user_id, order_date) '
             . 'VALUES (:user_id, :order_date)';

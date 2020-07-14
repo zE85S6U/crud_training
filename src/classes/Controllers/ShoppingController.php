@@ -6,6 +6,8 @@ namespace Classes\Controllers;
 
 use Classes\Models\Products;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Exception\NotFoundException;
+use Slim\Exception\SlimException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -39,11 +41,17 @@ class ShoppingController extends Controller
      * @param Response $response
      * @param array $args
      * @return ResponseInterface
+     * @throws NotFoundException
      */
-    public function show(Request $request, Response $response, array $args): ResponseInterface
+    public function show(Request $request, Response $response, array $args)
     {
         $product = new Products($this->db);
         $items = $product->getProductsOfId($args);
+
+        // 商品が存在しない場合はエラー
+        if (!$items) {
+            throw new NotFoundException($request, $response);
+        }
 
         $data = ['product' => $items];
         return $this->renderer->render($response, '/shopping/item.phtml', $data);
