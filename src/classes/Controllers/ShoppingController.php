@@ -7,7 +7,6 @@ namespace Classes\Controllers;
 use Classes\Models\Products;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\NotFoundException;
-use Slim\Exception\SlimException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 

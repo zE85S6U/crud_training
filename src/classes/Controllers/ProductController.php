@@ -4,11 +4,9 @@
 namespace Classes\Controllers;
 
 
-use Cassandra\Exception\InvalidQueryException;
 use Classes\Models\Products;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Exception\ContainerException;
 use Slim\Exception\NotFoundException;
 use Slim\Exception\SlimException;
 use Slim\Http\Request;
