@@ -89,7 +89,7 @@ class ProductController extends Controller
         // IDから商品情報を取得
         $item = $product->getProductsOfId($args);
 
-        if ($item) {
+        if (!$item) {
             throw new NotFoundException($request, $response);
         }
         $data = ['product' => $item];
